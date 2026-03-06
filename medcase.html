@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedCase - Minha Maleta Inteligente</title>
+
+<style>
+/* --- Estilos Base e Reset (Mantidos) --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --primary-blue: #1a73e8; --success-green: #34a853; --warning-orange: #f9ab00;
+    --error-red: #ea4335; --light-gray: #f0f2f5; --medium-gray: #e0e0e0;
+    --dark-gray: #5f6368; --text-dark: #202124; --text-light: #ffffff;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08); --border-radius: 20px;
+}
+body { font-family: 'Open Sans', sans-serif; color: var(--text-dark); background-color: var(--light-gray); }
+.container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* --- Cabeçalho Simplificado --- */
+.header { background-color: var(--text-light); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+.header-content { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: var(--primary-blue); font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.user-date { text-align: right; font-size: 0.9rem; color: var(--dark-gray); }
+.user-date strong { display: block; font-size: 1.1rem; color: var(--text-dark); }
+
+/* --- Navegação em Abas (Tabs) --- */
+.tabs-container { background: var(--text-light); margin-top: 20px; border-radius: var(--border-radius) var(--border-radius) 0 0; padding: 10px 20px 0; display: flex; gap: 10px; }
+.tab-btn { padding: 12px 25px; border: none; background: none; font-family: 'Montserrat', sans-serif; font-weight: 600; color: var(--dark-gray); cursor: pointer; position: relative; opacity: 0.7; transition: all 0.3s; border-radius: 10px 10px 0 0; }
+.tab-btn.active { color: var(--primary-blue); opacity: 1; background: var(--light-gray); }
+.tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--primary-blue); }
+.tab-content { display: none; padding: 30px 0; animation: fadeIn 0.4s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- VISUAL DA MALETA (DASHBOARD PRINCIPAL) --- */
+.maleta-container { background: var(--text-light); padding: 30px; border-radius: 0 0 var(--border-radius) var(--border-radius); box-shadow: var(--shadow); }
+.maleta-header { text-align: center; margin-bottom: 30px; }
+.maleta-header h2 { font-family: 'Montserrat', sans-serif; color: var(--text-dark); font-size: 1.8rem; margin-bottom: 10px; }
+.maleta-header p { color: var(--dark-gray); }
+
+.slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+
+/* Estilo dos Slots (Nichos) */
+.slot-card { 
+    position: relative; min-height: 200px; border-radius: 24px; padding: 25px; color: white; 
+    display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden; border: 3px solid transparent;
+}
+.slot-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
+.slot-card:active { transform: scale(0.98); }
+
+/* Cores Vibrantes */
+.color-1 { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }
+.color-2 { background: linear-gradient(135deg, #4E65FF, #92EFFD); }
+.color-3 { background: linear-gradient(135deg, #00b09b, #96c93d); }
+.color-4 { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
+.color-5 { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
+.color-6 { background: linear-gradient(135deg, #c21500, #ffc500); }
+
+/* Estados do Slot */
+.slot-number { position: absolute; top: -10px; left: 20px; font-size: 5rem; font-weight: 900; opacity: 0.15; font-family: 'Montserrat', sans-serif; }
+.slot-content { position: relative; z-index: 2; }
+.med-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif; }
+.med-details { font-size: 0.95rem; opacity: 0.9; display: flex; flex-direction: column; gap: 5px; }
+.med-details i { width: 20px; text-align: center; }
+
+/* Botão de Editar no canto */
+.btn-config-slot {
+    position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.25); 
+    width: 40px; height: 40px; border-radius: 50%; border: none; color: white; font-size: 1.2rem;
+    cursor: pointer; backdrop-filter: blur(5px); transition: background 0.3s; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-config-slot:hover { background: rgba(255,255,255,0.4); transform: rotate(30deg); }
+
+/* Estado: Tomado (Taken) */
+.slot-card.taken { background: #e8f5e9; border-color: var(--success-green); }
+.slot-card.taken .med-name, .slot-card.taken .med-details, .slot-card.taken .slot-number { color: var(--success-green); opacity: 1; }
+.slot-card.taken .btn-config-slot { background: rgba(52, 168, 83, 0.2); color: var(--success-green); }
+.taken-badge { 
+    background: var(--success-green); color: white; padding: 8px 15px; border-radius: 30px; 
+    font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 0 5px 15px rgba(52, 168, 83, 0.3); margin-top: 15px;
+}
+
+/* Estado: Vazio */
+.slot-empty-state { text-align: center; padding: 30px 0; opacity: 0.8; }
+.slot-empty-state i { font-size: 3rem; margin-bottom: 10px; opacity: 0.5; }
+
+/* --- Seção de Contatos (Estilo mantido e simplificado) --- */
+.contacts-section { background: var(--text-light); padding: 30px; border-radius: 0 0 var(--border-radius) var(--border-radius); box-shadow: var(--shadow); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 15px; align-items: flex-end; margin-bottom: 30px; }
+.form-control { width: 100%; padding: 12px; border: 1px solid var(--medium-gray); border-radius: 8px; font-family: inherit; }
+.btn-primary { padding: 12px 25px; background: var(--primary-blue); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.contacts-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+.contact-card { background: var(--light-gray); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary-blue); }
+.contact-card.doctor { border-left-color: var(--warning-orange); }
+.btn-delete { border: none; background: none; color: var(--error-red); cursor: pointer; font-size: 1.1rem; }
+
+/* --- Modais e Toast (Estilos mantidos) --- */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
+.modal-content { background: var(--text-light); width: 90%; max-width: 450px; border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal h3 { font-family: 'Montserrat', sans-serif; color: var(--primary-blue); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+.modal-buttons { display: flex; gap: 10px; margin-top: 25px; }
+.btn-cancel { flex: 1; padding: 15px; background: var(--medium-gray); border: none; border-radius: 12px; font-weight: 700; cursor: pointer; color: var(--text-dark); }
+.btn-save { flex: 1; padding: 15px; background: var(--primary-blue); border: none; border-radius: 12px; font-weight: 700; cursor: pointer; color: white; }
+.toast { position: fixed; bottom: 30px; right: 30px; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; z-index: 2000; border-left: 5px solid var(--success-green); font-weight: 600; display: flex; align-items: center; gap: 15px; }
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .form-row { grid-template-columns: 1fr; }
+    .header-content { flex-direction: column; gap: 10px; text-align: center; }
+    .user-date { text-align: center; }
+    .slot-card { min-height: 180px; }
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-briefcase-medical fa-lg"></i> MedCase
+            </div>
+            <div class="user-date">
+                Olá, <strong>Maria Silva</strong>
+                <span id="current-date">Carregando data...</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="painel-maleta">
+                <i class="fas fa-th-large"></i> Minha Maleta
+            </button>
+            <button class="tab-btn" data-tab="painel-contatos">
+                <i class="fas fa-user-friends"></i> Contatos & Ajustes
+            </button>
+        </div>
+
+        <section id="painel-maleta" class="tab-content active">
+            <div class="maleta-container">
+                <div class="maleta-header">
+                    <h2>Painel de Medicamentos</h2>
+                    <p>Toque no medicamento para confirmar que tomou, ou use o botão físico na maleta.</p>
+                </div>
+                
+                <div class="slots-grid" id="slots-visual-grid">
+                    </div>
+            </div>
+        </section>
+
+        <section id="painel-contatos" class="tab-content">
+            <div class="contacts-section">
+                <h3 style="font-family: 'Montserrat', sans-serif; color: var(--dark-blue); margin-bottom: 20px;">
+                    <i class="fas fa-bell"></i> Quem recebe notificações?
+                </h3>
+                
+                <form id="form-contato" class="form-row">
+                    <input type="text" id="contato-nome" class="form-control" placeholder="Nome (ex: João)" required>
+                    <select id="contato-tipo" class="form-control" required>
+                        <option value="Familiar">Familiar / Cuidador</option>
+                        <option value="Médico">Médico</option>
+                    </select>
+                    <input type="text" id="contato-tel" class="form-control" placeholder="Telefone/WhatsApp" required>
+                    <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Adicionar</button>
+                </form>
+
+                <div class="contacts-list" id="contatos-container">
+                    </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="slot-modal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-capsules"></i> Configurar Nicho <span id="modal-slot-num"></span></h3>
+            <form id="form-slot">
+                <input type="hidden" id="slot-id-hidden">
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 5px;">Nome do Medicamento</label>
+                    <input type="text" id="slot-nome" class="form-control" placeholder="Ex: Losartana" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 5px;">Dosagem / Instrução</label>
+                    <input type="text" id="slot-dosagem" class="form-control" placeholder="Ex: 1 comprimido após almoço">
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 5px;">Horário Ideal</label>
+                    <input type="time" id="slot-horario" class="form-control" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" id="btn-limpar-slot" style="color: var(--error-red);">Esvaziar Nicho</button>
+                    <button type="submit" class="btn-save">Salvar Configuração</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast" style="display: none;">
+        <i class="fas fa-check-circle fa-lg"></i>
+        <span id="toast-msg">Ação concluída com sucesso!</span>
+    </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+// Configuração do Firebase (Seu banco de dados)
+const firebaseConfig = {
+    databaseURL: "https://medcase-9213d-default-rtdb.firebaseio.com/"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Variáveis Globais
+const NUMERO_DE_SLOTS = 6;
+let maletaSlots = {};
+let contatosApp = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    atualizarData();
+    inicializarAbasEModais();
+
+    // 1. Firebase: Escuta os Slots (O coração do painel)
+    onValue(ref(db, 'slots_maleta'), (snapshot) => {
+        maletaSlots = snapshot.val() || {};
+        renderizarPainelMaleta();
+    });
+
+    // 2. Firebase: Escuta os Contatos
+    onValue(ref(db, 'contatos'), (snapshot) => {
+        contatosApp = [];
+        if (snapshot.exists()) {
+            snapshot.forEach(child => {
+                contatosApp.push({ idFirebase: child.key, ...child.val() });
+            });
+        }
+        renderizarContatos();
+    });
+
+    // Formulários
+    document.getElementById('form-slot').addEventListener('submit', salvarConfigSlot);
+    document.getElementById('form-contato').addEventListener('submit', salvarContato);
+    document.getElementById('btn-limpar-slot').addEventListener('click', limparSlot);
+});
+
+// ==========================================
+// LÓGICA PRINCIPAL: RENDERIZAR O PAINEL DA MALETA
+// ==========================================
+function renderizarPainelMaleta() {
+    const container = document.getElementById('slots-visual-grid');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= NUMERO_DE_SLOTS; i++) {
+        const slotData = maletaSlots[`slot_${i}`];
+        const slotElement = document.createElement('div');
+        
+        // Define a classe base e a cor
+        let className = `slot-card color-${i}`;
+        
+        // Se já foi tomado hoje, adiciona classe especial
+        if (slotData && slotData.status === 'taken') {
+            className += ' taken';
+        }
+
+        slotElement.className = className;
+
+        if (slotData && slotData.nome) {
+            // --- SLOT OCUPADO COM REMÉDIO ---
+            slotElement.innerHTML = `
+                <span class="slot-number">${i}</span>
+                
+                <button class="btn-config-slot" data-slot="${i}">
+                    <i class="fas fa-cog"></i>
+                </button>
+
+                <div class="slot-content">
+                    <div class="med-name">
+                        ${slotData.status === 'taken' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-pills"></i>'}
+                        ${slotData.nome}
+                    </div>
+                    <div class="med-details">
+                        <span><i class="far fa-clock"></i> Horário: <strong>${slotData.horario}</strong></span>
+                        <span><i class="fas fa-prescription-bottle-alt"></i> ${slotData.dosagem || 'Sem dosagem'}</span>
+                    </div>
+
+                    ${slotData.status === 'taken' ? 
+                        `<div class="taken-badge"><i class="fas fa-check"></i> Tomado Hoje</div>` : 
+                        `<div style="margin-top: 15px; font-weight: 600; font-size: 0.9rem;"><i class="fas fa-hand-pointer"></i> Toque para confirmar</div>`
+                    }
+                </div>
+            `;
+
+            // Clique Principal no Card: Simula tomar o remédio (igual botão físico)
+            slotElement.addEventListener('click', (e) => {
+                // Evita disparar se clicou na engrenagem
+                if (e.target.closest('.btn-config-slot')) return;
+                tomarRemedio(i, slotData);
+            });
+
+            // Clique na Engrenagem: Abre configuração
+            slotElement.querySelector('.btn-config-slot').addEventListener('click', (e) => {
+                e.stopPropagation(); // Para não disparar o clique principal
+                abrirModalConfig(i, slotData);
+            });
+
+        } else {
+            // --- SLOT VAZIO ---
+            slotElement.innerHTML = `
+                <span class="slot-number">${i}</span>
+                <div class="slot-empty-state slot-content">
+                    <i class="fas fa-plus-circle"></i>
+                    <h3 style="font-size: 1.2rem;">Nicho ${i} Vazio</h3>
+                    <p style="font-size: 0.9rem;">Toque para configurar um medicamento</p>
+                </div>
+            `;
+            // Clique no slot vazio abre a configuração
+            slotElement.addEventListener('click', () => abrirModalConfig(i, null));
+        }
+
+        container.appendChild(slotElement);
+    }
+}
+
+// ==========================================
+// AÇÕES DO USUÁRIO (TOMAR E CONFIGURAR)
+// ==========================================
+
+// Função que o ESP32 também chamará fisicamente
+function tomarRemedio(slotId, slotData) {
+    const novoStatus = slotData.status === 'taken' ? 'pending' : 'taken';
+    const agora = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+    update(ref(db, `slots_maleta/slot_${slotId}`), {
+        status: novoStatus,
+        ultimoAcionamento: agora
+    });
+
+    if(novoStatus === 'taken') {
+        mostrarToast(`✅ Confirmado: ${slotData.nome} foi tomado às ${agora}.`);
+        // Aqui futuramente entrará a chamada para notificação push
+    } else {
+         mostrarToast(`↩️ Ação desfeita para ${slotData.nome}.`);
+    }
+}
+
+function abrirModalConfig(slotId, data) {
+    document.getElementById('slot-id-hidden').value = slotId;
+    document.getElementById('modal-slot-num').textContent = slotId;
+    
+    const btnLimpar = document.getElementById('btn-limpar-slot');
+
+    if (data) {
+        document.getElementById('slot-nome').value = data.nome || '';
+        document.getElementById('slot-dosagem').value = data.dosagem || '';
+        document.getElementById('slot-horario').value = data.horario || '';
+        btnLimpar.style.display = 'block';
+    } else {
+        document.getElementById('form-slot').reset();
+        btnLimpar.style.display = 'none';
+    }
+    
+    document.getElementById('slot-modal').style.display = 'flex';
+}
+
+function salvarConfigSlot(e) {
+    e.preventDefault();
+    const slotId = document.getElementById('slot-id-hidden').value;
+    
+    set(ref(db, `slots_maleta/slot_${slotId}`), {
+        nome: document.getElementById('slot-nome').value,
+        dosagem: document.getElementById('slot-dosagem').value,
+        horario: document.getElementById('slot-horario').value,
+        status: 'pending' // Resetar status ao reconfigurar
+    });
+
+    fecharModal();
+    mostrarToast(`⚙️ Nicho ${slotId} configurado com sucesso!`);
+}
+
+function limparSlot() {
+    const slotId = document.getElementById('slot-id-hidden').value;
+    if(confirm(`Tem certeza que deseja esvaziar o Nicho ${slotId}?`)) {
+        remove(ref(db, `slots_maleta/slot_${slotId}`));
+        fecharModal();
+        mostrarToast(`🗑️ Nicho ${slotId} esvaziado.`);
+    }
+}
+
+// ==========================================
+// CONTATOS E UTILITÁRIOS
+// ==========================================
+function salvarContato(e) {
+    e.preventDefault();
+    const nome = document.getElementById('contato-nome').value;
+    push(ref(db, 'contatos'), {
+        nome: nome,
+        tipo: document.getElementById('contato-tipo').value,
+        telefone: document.getElementById('contato-tel').value
+    });
+    document.getElementById('form-contato').reset();
+    mostrarToast(`👤 Contato ${nome} adicionado!`);
+}
+
+function renderizarContatos() {
+    const container = document.getElementById('contatos-container');
+    container.innerHTML = '';
+    if (contatosApp.length === 0) {
+        container.innerHTML = '<p style="color: var(--dark-gray); padding: 20px;">Nenhum contato para notificar.</p>'; return;
+    }
+    contatosApp.forEach(c => {
+        const div = document.createElement('div');
+        div.className = `contact-card ${c.tipo === 'Médico' ? 'doctor' : ''}`;
+        div.innerHTML = `
+            <div><strong>${c.nome}</strong> <br><small>${c.tipo} | ${c.telefone}</small></div>
+            <button class="btn-delete" onclick="deletarContato('${c.idFirebase}')"><i class="fas fa-trash"></i></button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.deletarContato = function(id) {
+    if(confirm('Remover este contato?')) remove(ref(db, `contatos/${id}`));
+}
+
+function inicializarAbasEModais() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn, .tab-content').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+    });
+    document.getElementById('slot-modal').addEventListener('click', (e) => {
+        if(e.target === document.getElementById('slot-modal')) fecharModal();
+    });
+}
+
+function fecharModal() { document.getElementById('slot-modal').style.display = 'none'; }
+
+function atualizarData() {
+    const options = { weekday: 'long', day: 'numeric', month: 'long' };
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR', options);
+}
+
+function mostrarToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    toast.style.display = 'flex';
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
