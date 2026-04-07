@@ -1,326 +1,680 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedCase - Minha Maleta Inteligente</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedCase — Painel Inteligente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* --- Estilos Base e Reset --- */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
 :root {
-    --primary-blue: #1a73e8; --success-green: #34a853; --warning-orange: #f9ab00;
-    --error-red: #ea4335; --light-gray: #f4f6f9; --medium-gray: #e0e0e0;
-    --dark-gray: #5f6368; --text-dark: #202124; --text-light: #ffffff;
-    --shadow: 0 8px 30px rgba(0, 0, 0, 0.08); --border-radius: 24px;
+  --bg-app:       #f0f4fb;
+  --bg-sidebar:   #ffffff;
+  --bg-card:      #ffffff;
+  --bg-topbar:    rgba(255,255,255,0.85);
+
+  --blue-600:     #1a6eff;
+  --blue-500:     #3d85ff;
+  --blue-100:     #e8f0ff;
+  --blue-50:      #f2f6ff;
+
+  --mint-500:     #00c48c;
+  --mint-100:     #d6f5ec;
+
+  --amber-500:    #f59e0b;
+  --amber-100:    #fef3c7;
+
+  --rose-500:     #f43f5e;
+  --rose-100:     #ffe4e9;
+
+  --purple-500:   #8b5cf6;
+  --purple-100:   #ede9fe;
+
+  --text-dark:    #111827;
+  --text-mid:     #4b5563;
+  --text-soft:    #9ca3af;
+
+  --border:       #e5eaf2;
+  --shadow-sm:    0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 20px rgba(0,0,0,0.08);
+
+  --sidebar-w:    260px;
+  --radius-lg:    20px;
+  --radius-md:    14px;
+  --radius-sm:    10px;
+
+  --g1: linear-gradient(135deg, #ff4d6d 0%, #ff8552 100%);
+  --g2: linear-gradient(135deg, #1a6eff 0%, #00c48c 100%);
+  --g3: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  --g4: linear-gradient(135deg, #00c48c 0%, #0ea5e9 100%);
+  --g5: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  --g6: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
-body { font-family: 'Open Sans', sans-serif; color: var(--text-dark); background-color: var(--light-gray); }
-.container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-/* --- Cabeçalho --- */
-.header { background-color: var(--text-light); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-.header-content { display: flex; justify-content: space-between; align-items: center; }
-.logo { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: var(--text-dark); font-weight: 800; display: flex; align-items: center; gap: 10px; }
-.logo i { color: var(--primary-blue); }
-.user-date { text-align: right; font-size: 0.9rem; color: var(--dark-gray); }
-.user-date strong { display: block; font-size: 1.1rem; color: var(--text-dark); }
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg-app); color: var(--text-dark); overflow-x: hidden; }
 
-/* --- Navegação em Abas --- */
-.tabs-container { background: var(--text-light); margin-top: 30px; border-radius: var(--border-radius) var(--border-radius) 0 0; padding: 15px 25px 0; display: flex; gap: 15px; }
-.tab-btn { padding: 12px 25px; border: none; background: none; font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--dark-gray); cursor: pointer; position: relative; opacity: 0.6; transition: all 0.3s; font-size: 1rem; }
-.tab-btn.active { color: var(--primary-blue); opacity: 1; }
-.tab-btn.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 4px; background: var(--primary-blue); border-radius: 4px 4px 0 0; }
-.tab-content { display: none; background: var(--text-light); padding: 40px; border-radius: 0 0 var(--border-radius) var(--border-radius); box-shadow: var(--shadow); animation: fadeIn 0.4s ease; min-height: 60vh; }
-.tab-content.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* --- SELEÇÃO DE PRODUTOS --- */
-#view-produtos { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
-.produto-card {
-    background: var(--light-gray); border-radius: var(--border-radius); padding: 40px 30px;
-    width: 320px; text-align: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border: 2px solid transparent; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #c8d8f0 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
 }
-.produto-card:hover { transform: translateY(-10px); background: white; border-color: var(--primary-blue); box-shadow: 0 15px 35px rgba(26, 115, 232, 0.15); }
-.produto-icon { font-size: 4rem; color: var(--primary-blue); margin-bottom: 20px; transition: transform 0.3s; }
-.produto-card:hover .produto-icon { transform: scale(1.1); }
-.produto-card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; margin-bottom: 10px; }
-.produto-card p { color: var(--dark-gray); font-size: 0.95rem; }
 
-/* --- VISUAL DA MALETA INTERNA --- */
-#view-maleta-interna { display: none; animation: expandCase 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-@keyframes expandCase { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.app-shell { display: flex; min-height: 100vh; position: relative; z-index: 1; }
 
-.maleta-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--medium-gray); }
-.btn-voltar { background: none; border: none; font-size: 1rem; font-weight: 600; color: var(--dark-gray); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
-.btn-voltar:hover { color: var(--primary-blue); }
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  padding: 28px 16px;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 50;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.04);
+}
 
-.slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 0 6px; margin-bottom: 40px; }
 
-/* Estilos dos Slots (Mantidos e Refinados) */
-.slot-card { position: relative; min-height: 180px; border-radius: 20px; padding: 25px; color: white; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.1); transition: all 0.3s; overflow: hidden; border: 3px solid transparent; }
-.slot-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.2); }
-.color-1 { background: linear-gradient(135deg, #FF6B6B, #FF8E53); } .color-2 { background: linear-gradient(135deg, #4E65FF, #92EFFD); }
-.color-3 { background: linear-gradient(135deg, #00b09b, #96c93d); } .color-4 { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
-.color-5 { background: linear-gradient(135deg, #fc4a1a, #f7b733); } .color-6 { background: linear-gradient(135deg, #c21500, #ffc500); }
+.logo-icon {
+  width: 40px; height: 40px;
+  background: var(--blue-600);
+  border-radius: 12px; display: grid; place-items: center;
+  font-size: 1.1rem; color: white;
+  box-shadow: 0 4px 14px rgba(26,110,255,0.35); flex-shrink: 0;
+}
 
-.slot-number { position: absolute; top: -10px; right: 10px; font-size: 6rem; font-weight: 900; opacity: 0.1; font-family: 'Montserrat', sans-serif; }
-.med-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; font-family: 'Montserrat', sans-serif; position: relative; z-index: 2; }
-.med-details { font-size: 0.9rem; opacity: 0.95; display: flex; flex-direction: column; gap: 6px; position: relative; z-index: 2; }
-.btn-config-slot { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.25); width: 35px; height: 35px; border-radius: 50%; border: none; color: white; cursor: pointer; backdrop-filter: blur(5px); z-index: 10; display: flex; align-items: center; justify-content: center; }
-.btn-config-slot:hover { background: rgba(255,255,255,0.4); }
-.slot-empty-state { text-align: center; padding: 20px 0; opacity: 0.8; }
+.logo-text { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-dark); }
+.logo-text span { color: var(--blue-600); }
 
-/* --- Modais e Forms --- */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-.modal-content { background: var(--text-light); width: 90%; max-width: 500px; border-radius: 24px; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-.form-control { width: 100%; padding: 12px 15px; border: 2px solid var(--light-gray); border-radius: 10px; font-family: inherit; font-size: 1rem; transition: border-color 0.3s; background: var(--light-gray); }
-.form-control:focus { outline: none; border-color: var(--primary-blue); background: white; }
-label { font-weight: 600; font-size: 0.9rem; color: var(--dark-gray); margin-bottom: 8px; display: block; }
+.nav-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-soft); padding: 0 10px; margin-bottom: 8px; }
 
-.modal-buttons { display: flex; gap: 15px; margin-top: 30px; }
-.btn-cancel { flex: 1; padding: 14px; background: var(--light-gray); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; color: var(--dark-gray); }
-.btn-save { flex: 1; padding: 14px; background: var(--primary-blue); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; color: white; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.2s;
+  color: var(--text-mid); font-size: 0.88rem; font-weight: 500;
+  margin-bottom: 2px; position: relative; border: 1px solid transparent;
+}
 
-.toast { position: fixed; bottom: 30px; right: 30px; background: #333; color: white; padding: 15px 25px; border-radius: 12px; display: none; z-index: 2000; font-weight: 600; gap: 10px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.nav-item i { width: 16px; text-align: center; font-size: 0.85rem; }
+.nav-item:hover { background: var(--blue-50); color: var(--blue-600); }
+
+.nav-item.active {
+  background: var(--blue-100); color: var(--blue-600);
+  font-weight: 600; border-color: rgba(26,110,255,0.15);
+}
+
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; background: var(--blue-600); border-radius: 0 3px 3px 0;
+}
+
+.nav-badge { margin-left: auto; background: var(--blue-600); color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+
+.sidebar-footer { margin-top: auto; padding: 14px; background: var(--bg-app); border-radius: var(--radius-md); border: 1px solid var(--border); }
+
+.user-info { display: flex; align-items: center; gap: 12px; }
+
+.user-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--blue-600), var(--mint-500));
+  border-radius: 50%; display: grid; place-items: center;
+  font-weight: 700; font-size: 0.82rem; color: white; flex-shrink: 0;
+}
+
+.user-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--text-dark); }
+.user-role { font-size: 0.7rem; color: var(--text-soft); margin-top: 1px; }
+
+/* MAIN */
+.main { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 36px; border-bottom: 1px solid var(--border);
+  background: var(--bg-topbar); backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 40;
+}
+
+.topbar-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-dark); }
+.topbar-date { font-size: 0.8rem; color: var(--text-soft); display: flex; align-items: center; gap: 7px; margin-top: 2px; }
+.topbar-date i { color: var(--blue-600); font-size: 0.75rem; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+.icon-btn {
+  width: 36px; height: 36px; border: 1px solid var(--border);
+  background: white; border-radius: var(--radius-sm); display: grid; place-items: center;
+  cursor: pointer; color: var(--text-soft); transition: all 0.2s; box-shadow: var(--shadow-sm);
+}
+.icon-btn:hover { border-color: var(--blue-600); color: var(--blue-600); }
+
+/* PAGES */
+.page { padding: 36px; display: none; animation: fadeUp 0.35s ease; }
+.page.active { display: block; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+.page-heading { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-dark); line-height: 1.1; }
+.page-heading span { color: var(--blue-600); }
+.page-sub { margin-top: 6px; color: var(--text-soft); font-size: 0.88rem; }
+.page-header { margin-bottom: 30px; }
+
+/* DEVICE CARDS */
+.devices-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px,1fr)); gap: 20px; }
+
+.device-card {
+  background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 32px 28px; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+}
+
+.device-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--blue-600); opacity: 0; transition: opacity 0.3s;
+}
+
+.device-card:hover { transform: translateY(-5px); border-color: rgba(26,110,255,0.3); box-shadow: 0 16px 40px rgba(26,110,255,0.1); }
+.device-card:hover::before { opacity: 1; }
+
+.device-status {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.7rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 18px; padding: 3px 10px; border-radius: 20px;
+}
+.device-status.online { background: var(--mint-100); color: var(--mint-500); }
+.device-status.soon   { background: var(--amber-100); color: var(--amber-500); }
+.device-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.device-status.online::before { animation: pulse 2s infinite; }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.device-icon-wrap { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; font-size: 1.5rem; margin-bottom: 18px; }
+.device-icon-wrap.blue-icon   { background: var(--blue-100);   color: var(--blue-600);   }
+.device-icon-wrap.purple-icon { background: var(--purple-100); color: var(--purple-500); }
+
+.device-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+.device-desc  { font-size: 0.83rem; color: var(--text-soft); line-height: 1.6; }
+
+.device-arrow {
+  position: absolute; bottom: 22px; right: 22px;
+  width: 30px; height: 30px; border: 1px solid var(--border);
+  border-radius: 50%; display: grid; place-items: center;
+  color: var(--text-soft); font-size: 0.65rem; transition: all 0.3s;
+}
+.device-card:hover .device-arrow { background: var(--blue-600); border-color: var(--blue-600); color: white; }
+
+/* STATS BAR */
+.stats-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 28px; }
+
+.stat-card {
+  background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px 22px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-sm); transition: box-shadow 0.2s;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); }
+
+.stat-icon { width: 42px; height: 42px; border-radius: var(--radius-sm); display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+.stat-icon.blue   { background: var(--blue-100);   color: var(--blue-600);   }
+.stat-icon.mint   { background: var(--mint-100);   color: var(--mint-500);   }
+.stat-icon.amber  { background: var(--amber-100);  color: var(--amber-500);  }
+
+.stat-value { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.03em; line-height: 1; }
+.stat-label { font-size: 0.72rem; color: var(--text-soft); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* MALETA INTERNA */
+#view-maleta-interna { display: none; }
+
+.inner-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-mid);
+  font-size: 0.84rem; font-weight: 500; cursor: pointer;
+  transition: all 0.2s; font-family: inherit; box-shadow: var(--shadow-sm);
+}
+.btn-back:hover { border-color: var(--blue-600); color: var(--blue-600); }
+
+/* SLOT CARDS */
+.slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(285px,1fr)); gap: 18px; }
+
+.slot-card {
+  border-radius: var(--radius-lg); padding: 26px; position: relative;
+  cursor: pointer; overflow: hidden; min-height: 185px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  transition: transform 0.3s cubic-bezier(0.25,0.8,0.25,1), box-shadow 0.3s;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.slot-card:hover { transform: translateY(-5px) scale(1.01); }
+
+.slot-card.g1 { background: var(--g1); box-shadow: 0 8px 24px rgba(255,77,109,0.28); }
+.slot-card.g2 { background: var(--g2); box-shadow: 0 8px 24px rgba(26,110,255,0.28); }
+.slot-card.g3 { background: var(--g3); box-shadow: 0 8px 24px rgba(139,92,246,0.28); }
+.slot-card.g4 { background: var(--g4); box-shadow: 0 8px 24px rgba(0,196,140,0.28); }
+.slot-card.g5 { background: var(--g5); box-shadow: 0 8px 24px rgba(245,158,11,0.28); }
+.slot-card.g6 { background: var(--g6); box-shadow: 0 8px 24px rgba(99,102,241,0.28); }
+
+.slot-card.g1:hover { box-shadow: 0 18px 40px rgba(255,77,109,0.38); }
+.slot-card.g2:hover { box-shadow: 0 18px 40px rgba(26,110,255,0.38); }
+.slot-card.g3:hover { box-shadow: 0 18px 40px rgba(139,92,246,0.38); }
+.slot-card.g4:hover { box-shadow: 0 18px 40px rgba(0,196,140,0.38); }
+.slot-card.g5:hover { box-shadow: 0 18px 40px rgba(245,158,11,0.38); }
+.slot-card.g6:hover { box-shadow: 0 18px 40px rgba(99,102,241,0.38); }
+
+.slot-card.empty {
+  background: white; border: 1.5px dashed #d1d9e6; box-shadow: var(--shadow-sm);
+}
+.slot-card.empty:hover { border-color: var(--blue-600); background: var(--blue-50); box-shadow: 0 8px 24px rgba(26,110,255,0.1); }
+
+.slot-watermark {
+  position: absolute; right: -6px; top: -14px;
+  font-size: 6.5rem; font-family: 'Syne', sans-serif; font-weight: 800;
+  opacity: 0.09; line-height: 1; user-select: none; color: white;
+}
+.slot-card.empty .slot-watermark { color: var(--blue-600); opacity: 0.05; }
+
+.slot-top { display: flex; align-items: flex-start; justify-content: space-between; position: relative; z-index: 2; }
+
+.slot-num {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.18); padding: 3px 9px; border-radius: 20px;
+}
+
+.btn-edit-slot {
+  width: 30px; height: 30px; background: rgba(255,255,255,0.22);
+  border: none; border-radius: 50%; color: white; cursor: pointer;
+  display: grid; place-items: center; font-size: 0.72rem; transition: background 0.2s; z-index: 10;
+}
+.btn-edit-slot:hover { background: rgba(255,255,255,0.4); }
+
+.slot-bottom { position: relative; z-index: 2; }
+
+.slot-med-name { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 12px; line-height: 1.2; }
+
+.slot-details { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.slot-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.22); backdrop-filter: blur(4px);
+  padding: 4px 10px; border-radius: 20px; font-size: 0.73rem; font-weight: 500; color: white;
+}
+.slot-pill i { font-size: 0.65rem; opacity: 0.85; }
+
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 10px; color: var(--text-soft); text-align: center; }
+
+.plus-icon {
+  width: 40px; height: 40px; border: 2px dashed #d1d9e6;
+  border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; transition: all 0.3s;
+}
+.slot-card.empty:hover .plus-icon { border-color: var(--blue-600); color: var(--blue-600); background: var(--blue-100); }
+.empty-state span { font-size: 0.82rem; font-weight: 500; }
+
+/* COMING SOON */
+.coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; gap: 14px; }
+.coming-soon-icon { width: 76px; height: 76px; background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: 24px; display: grid; place-items: center; font-size: 1.9rem; color: var(--blue-600); margin-bottom: 6px; }
+.coming-soon h3 { font-family: 'Syne', sans-serif; font-size: 1.35rem; font-weight: 800; color: var(--text-dark); }
+.coming-soon p  { font-size: 0.86rem; color: var(--text-soft); max-width: 340px; line-height: 1.65; }
+.badge-soon { display: inline-block; background: var(--amber-100); color: var(--amber-500); border: 1px solid rgba(245,158,11,0.25); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(17,24,39,0.35); z-index: 1000; place-items: center; backdrop-filter: blur(6px); }
+.modal-overlay.open { display: grid; }
+
+.modal-box {
+  background: white; border: 1px solid var(--border); border-radius: 24px;
+  padding: 34px; width: 90%; max-width: 470px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn { from { opacity: 0; transform: scale(0.93) translateY(18px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.modal-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+
+.modal-icon-wrap { width: 40px; height: 40px; background: var(--blue-100); border-radius: var(--radius-sm); display: grid; place-items: center; color: var(--blue-600); font-size: 1rem; flex-shrink: 0; }
+
+.modal-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-dark); }
+.modal-subtitle { font-size: 0.76rem; color: var(--text-soft); margin-top: 2px; }
+
+.field { margin-bottom: 16px; }
+
+.field label { display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 7px; }
+
+.field input {
+  width: 100%; background: var(--bg-app); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 11px 14px;
+  color: var(--text-dark); font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; transition: all 0.2s; -webkit-appearance: none;
+}
+.field input:focus { outline: none; border-color: var(--blue-600); background: white; box-shadow: 0 0 0 3px rgba(26,110,255,0.12); }
+.field input::placeholder { color: var(--text-soft); }
+.field input[type="time"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.5; }
+
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.modal-footer { display: flex; gap: 12px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border); }
+
+.btn { flex: 1; padding: 12px; border-radius: var(--radius-sm); border: none; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+
+.btn-ghost { background: white; border: 1.5px solid var(--border); color: var(--text-mid); }
+.btn-ghost:hover { border-color: var(--rose-500); color: var(--rose-500); background: var(--rose-100); }
+
+.btn-primary { background: var(--blue-600); color: white; box-shadow: 0 4px 14px rgba(26,110,255,0.35); }
+.btn-primary:hover { background: #3580ff; box-shadow: 0 6px 20px rgba(26,110,255,0.45); transform: translateY(-1px); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 26px; right: 26px;
+  background: white; border: 1px solid var(--mint-100); color: var(--text-dark);
+  padding: 13px 20px; border-radius: var(--radius-md);
+  display: none; align-items: center; gap: 10px;
+  z-index: 3000; font-size: 0.86rem; font-weight: 500;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-width: 210px;
+}
+.toast.show { display: flex; animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.toast i { color: var(--mint-500); font-size: 1rem; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d9e6; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b0bcd4; }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <header class="header">
-        <div class="container header-content">
-            <div class="logo">
-                <i class="fas fa-briefcase-medical"></i> MedCase
-            </div>
-            <div class="user-date">
-                Olá, <strong>Maikol</strong>
-                <span id="current-date"></span>
-            </div>
-        </div>
-    </header>
+<div class="app-shell">
 
-    <div class="container">
-        <div class="tabs-container">
-            <button class="tab-btn active" data-tab="tab-dispositivos">Meus Dispositivos</button>
-            <button class="tab-btn" data-tab="tab-configuracoes">Notificações & Alertas</button>
-        </div>
-
-        <section id="tab-dispositivos" class="tab-content active">
-            
-            <div id="view-produtos">
-                <div class="produto-card" onclick="abrirMaleta()">
-                    <i class="fas fa-medkit produto-icon"></i>
-                    <h3>Maleta Inteligente</h3>
-                    <p>6 compartimentos configuráveis para sua medicação diária.</p>
-                </div>
-                
-                <div class="produto-card" onclick="alert('Módulo Pulseira em desenvolvimento!')">
-                    <i class="fas fa-ring produto-icon" style="color: #8E2DE2;"></i>
-                    <h3>Pulseira / Tag</h3>
-                    <p>Sensor para anexar ao frasco de medicamento individual.</p>
-                </div>
-            </div>
-
-            <div id="view-maleta-interna">
-                <div class="maleta-header">
-                    <div>
-                        <h2 style="font-family: 'Montserrat';">Interior da Maleta</h2>
-                        <p style="color: var(--dark-gray); font-size: 0.9rem;">Configure a posologia de cada nicho.</p>
-                    </div>
-                    <button class="btn-voltar" onclick="fecharMaleta()"><i class="fas fa-arrow-left"></i> Voltar aos dispositivos</button>
-                </div>
-                <div class="slots-grid" id="slots-visual-grid"></div>
-            </div>
-
-        </section>
-
-        <section id="tab-configuracoes" class="tab-content">
-            <h3>Configurações de WhatsApp (Em breve)</h3>
-            <p>Aqui ficará a vinculação com a API de mensagens do ESP32.</p>
-        </section>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-briefcase-medical"></i></div>
+      <span class="logo-text">Med<span>Case</span></span>
     </div>
 
-    <div id="slot-modal" class="modal">
-        <div class="modal-content">
-            <h3 style="font-family: 'Montserrat'; color: var(--text-dark); margin-bottom: 25px;">
-                <i class="fas fa-pills" style="color: var(--primary-blue);"></i> Configurar Nicho <span id="modal-slot-num"></span>
-            </h3>
-            
-            <form id="form-slot">
-                <input type="hidden" id="slot-id-hidden">
-                
-                <div style="margin-bottom: 15px;">
-                    <label>Nome do Medicamento</label>
-                    <input type="text" id="slot-nome" class="form-control" placeholder="Ex: Paracetamol 750mg" required>
-                </div>
+    <span class="nav-label">Menu Principal</span>
+    <nav>
+      <div class="nav-item active" data-tab="tab-dispositivos">
+        <i class="fas fa-boxes-stacked"></i> Meus Dispositivos
+        <span class="nav-badge">2</span>
+      </div>
+      <div class="nav-item" data-tab="tab-notificacoes">
+        <i class="fas fa-bell"></i> Notificações &amp; Alertas
+      </div>
+    </nav>
 
-                <div class="form-row-2">
-                    <div>
-                        <label>Vezes por dia</label>
-                        <input type="number" id="slot-freq" class="form-control" placeholder="Ex: 3" min="1" max="24" required>
-                    </div>
-                    <div>
-                        <label>Intervalo (Horas)</label>
-                        <input type="number" id="slot-intervalo" class="form-control" placeholder="Ex: 8" min="1" max="72" required>
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label>Horário da Primeira Dose</label>
-                    <input type="time" id="slot-primeira-dose" class="form-control" required>
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" id="btn-limpar-slot">Esvaziar</button>
-                    <button type="submit" class="btn-save">Salvar Posologia</button>
-                </div>
-            </form>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">MK</div>
+        <div>
+          <div class="user-name">Maikol</div>
+          <div class="user-role">Usuário Paciente</div>
         </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Meus Dispositivos</div>
+        <div class="topbar-date"><i class="fas fa-calendar-day"></i><span id="current-date"></span></div>
+      </div>
+      <div class="topbar-actions">
+        <div class="icon-btn" title="Atualizar"><i class="fas fa-rotate-right"></i></div>
+        <div class="icon-btn" title="Configurações"><i class="fas fa-sliders"></i></div>
+      </div>
     </div>
 
-    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
+    <section id="tab-dispositivos" class="page active">
+      <div id="view-produtos">
+        <div class="page-header">
+          <h1 class="page-heading">Seus <span>Dispositivos</span></h1>
+          <p class="page-sub">Selecione um dispositivo para gerenciar sua posologia.</p>
+        </div>
+        <div class="devices-grid">
+          <div class="device-card" onclick="abrirMaleta()">
+            <div class="device-status online">Online</div>
+            <div class="device-icon-wrap blue-icon"><i class="fas fa-medkit"></i></div>
+            <div class="device-title">Maleta Inteligente</div>
+            <div class="device-desc">6 compartimentos configuráveis sincronizados em tempo real para sua medicação diária.</div>
+            <div class="device-arrow"><i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="device-card" onclick="alert('Módulo Pulseira em desenvolvimento!')">
+            <div class="device-status soon">Em breve</div>
+            <div class="device-icon-wrap purple-icon"><i class="fas fa-ring"></i></div>
+            <div class="device-title">Pulseira / Tag</div>
+            <div class="device-desc">Sensor compacto para fixar ao frasco de medicamento individual com alerta por vibração.</div>
+            <div class="device-arrow"><i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-maleta-interna">
+        <div class="page-header">
+          <h1 class="page-heading">Interior da <span>Maleta</span></h1>
+          <p class="page-sub">Clique em um nicho para configurar a posologia do medicamento.</p>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-box-open"></i></div>
+            <div><div class="stat-value" id="stat-ocupados">—</div><div class="stat-label">Nichos ocupados</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon mint"><i class="fas fa-pills"></i></div>
+            <div><div class="stat-value" id="stat-livre">—</div><div class="stat-label">Nichos livres</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+            <div><div class="stat-value" id="stat-doses">—</div><div class="stat-label">Doses / dia</div></div>
+          </div>
+        </div>
+
+        <div class="inner-header">
+          <span style="font-size:0.82rem; color:var(--text-soft);">6 compartimentos disponíveis</span>
+          <button class="btn-back" onclick="fecharMaleta()"><i class="fas fa-arrow-left"></i> Voltar</button>
+        </div>
+
+        <div class="slots-grid" id="slots-visual-grid"></div>
+      </div>
+    </section>
+
+    <section id="tab-notificacoes" class="page">
+      <div class="page-header">
+        <h1 class="page-heading">Notificações &amp; <span>Alertas</span></h1>
+        <p class="page-sub">Configure os alertas via WhatsApp integrados ao ESP32.</p>
+      </div>
+      <div class="coming-soon">
+        <div class="coming-soon-icon"><i class="fab fa-whatsapp"></i></div>
+        <span class="badge-soon">Em desenvolvimento</span>
+        <h3>API WhatsApp + ESP32</h3>
+        <p>A integração com a API de mensagens via ESP32 estará disponível em breve. Você receberá alertas de dose diretamente no WhatsApp.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="slot-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-heading">
+      <div class="modal-icon-wrap"><i class="fas fa-pills"></i></div>
+      <div>
+        <div class="modal-title">Configurar Nicho <span id="modal-slot-num"></span></div>
+        <div class="modal-subtitle">Preencha a posologia do medicamento</div>
+      </div>
+    </div>
+    <form id="form-slot">
+      <input type="hidden" id="slot-id-hidden">
+      <div class="field">
+        <label>Nome do Medicamento</label>
+        <input type="text" id="slot-nome" placeholder="Ex: Paracetamol 750mg" required>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Vezes por dia</label><input type="number" id="slot-freq" placeholder="Ex: 3" min="1" max="24" required></div>
+        <div class="field"><label>Intervalo (horas)</label><input type="number" id="slot-intervalo" placeholder="Ex: 8" min="1" max="72" required></div>
+      </div>
+      <div class="field">
+        <label>Horário da Primeira Dose</label>
+        <input type="time" id="slot-primeira-dose" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="btn-limpar-slot"><i class="fas fa-trash-alt"></i> Esvaziar</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Salvar Posologia</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = { databaseURL: "https://medcase-9213d-default-rtdb.firebaseio.com/" };
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-const NUMERO_DE_SLOTS = 6;
+const db  = getDatabase(app);
+const SLOTS = 6;
 let maletaSlots = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-    
-    // Navegação de Abas
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn, .tab-content').forEach(el => el.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(btn.dataset.tab).classList.add('active');
-        });
-    });
+  document.getElementById('current-date').textContent =
+    new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
 
-    // Firebase Data
-    onValue(ref(db, 'slots_maleta'), (snapshot) => {
-        maletaSlots = snapshot.val() || {};
-        renderizarPainelMaleta();
+  document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.tab).classList.add('active');
+      document.getElementById('topbar-title').textContent = item.textContent.trim().replace(/\d+/,'').trim();
     });
+  });
 
-    document.getElementById('form-slot').addEventListener('submit', salvarConfigSlot);
-    document.getElementById('btn-limpar-slot').addEventListener('click', limparSlot);
-    
-    // Fechar modal clicando fora
-    document.getElementById('slot-modal').addEventListener('click', (e) => {
-        if(e.target === document.getElementById('slot-modal')) fecharModal();
-    });
+  onValue(ref(db, 'slots_maleta'), snapshot => {
+    maletaSlots = snapshot.val() || {};
+    renderSlots(); updateStats();
+  });
+
+  document.getElementById('form-slot').addEventListener('submit', salvarSlot);
+  document.getElementById('btn-limpar-slot').addEventListener('click', limparSlot);
+  document.getElementById('slot-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('slot-modal')) fecharModal();
+  });
 });
 
-// Funções de Transição de Tela
-window.abrirMaleta = function() {
-    document.getElementById('view-produtos').style.display = 'none';
-    document.getElementById('view-maleta-interna').style.display = 'block';
+window.abrirMaleta = function () {
+  document.getElementById('view-produtos').style.display = 'none';
+  document.getElementById('view-maleta-interna').style.display = 'block';
+};
+
+window.fecharMaleta = function () {
+  document.getElementById('view-maleta-interna').style.display = 'none';
+  document.getElementById('view-produtos').style.display = 'block';
+};
+
+function updateStats () {
+  const ocupados = Object.keys(maletaSlots).filter(k => maletaSlots[k]?.nome).length;
+  document.getElementById('stat-ocupados').textContent = ocupados;
+  document.getElementById('stat-livre').textContent    = SLOTS - ocupados;
+  document.getElementById('stat-doses').textContent    =
+    Object.values(maletaSlots).filter(s=>s?.frequencia).reduce((a,s)=>a+Number(s.frequencia),0);
 }
 
-window.fecharMaleta = function() {
-    document.getElementById('view-maleta-interna').style.display = 'none';
-    document.getElementById('view-produtos').style.display = 'flex';
-}
-
-// Renderizar Grade
-function renderizarPainelMaleta() {
-    const container = document.getElementById('slots-visual-grid');
-    container.innerHTML = '';
-
-    for (let i = 1; i <= NUMERO_DE_SLOTS; i++) {
-        const slotData = maletaSlots[`slot_${i}`];
-        const slotElement = document.createElement('div');
-        slotElement.className = `slot-card color-${i}`;
-
-        if (slotData && slotData.nome) {
-            slotElement.innerHTML = `
-                <button class="btn-config-slot" onclick="event.stopPropagation(); abrirModalConfig(${i}, true)">
-                    <i class="fas fa-pen"></i>
-                </button>
-                <span class="slot-number">${i}</span>
-                <div class="med-name">${slotData.nome}</div>
-                <div class="med-details">
-                    <span><i class="fas fa-redo"></i> ${slotData.frequencia}x ao dia</span>
-                    <span><i class="fas fa-hourglass-half"></i> A cada ${slotData.intervalo} horas</span>
-                    <span><i class="far fa-clock"></i> Início: ${slotData.primeira_dose}</span>
-                </div>
-            `;
-            // Clicar no card inteiro pode abrir a edição também
-            slotElement.addEventListener('click', () => abrirModalConfig(i, true));
-        } else {
-            slotElement.innerHTML = `
-                <span class="slot-number">${i}</span>
-                <div class="slot-empty-state">
-                    <i class="fas fa-plus-circle fa-2x" style="margin-bottom:10px; opacity: 0.7;"></i>
-                    <h4>Adicionar ao Nicho ${i}</h4>
-                </div>
-            `;
-            slotElement.addEventListener('click', () => abrirModalConfig(i, false));
-        }
-        container.appendChild(slotElement);
-    }
-}
-
-// Lógica Modal
-window.abrirModalConfig = function(slotId, isEdit) {
-    const data = maletaSlots[`slot_${slotId}`];
-    document.getElementById('slot-id-hidden').value = slotId;
-    document.getElementById('modal-slot-num').textContent = slotId;
-    
-    if (isEdit && data) {
-        document.getElementById('slot-nome').value = data.nome || '';
-        document.getElementById('slot-freq').value = data.frequencia || '';
-        document.getElementById('slot-intervalo').value = data.intervalo || '';
-        document.getElementById('slot-primeira-dose').value = data.primeira_dose || '';
-        document.getElementById('btn-limpar-slot').style.display = 'block';
+function renderSlots () {
+  const container = document.getElementById('slots-visual-grid');
+  container.innerHTML = '';
+  for (let i = 1; i <= SLOTS; i++) {
+    const data = maletaSlots[`slot_${i}`];
+    const card = document.createElement('div');
+    if (data?.nome) {
+      card.className = `slot-card g${i}`;
+      card.innerHTML = `
+        <div class="slot-top">
+          <span class="slot-num">Nicho ${i}</span>
+          <button class="btn-edit-slot" onclick="event.stopPropagation(); abrirModal(${i}, true)"><i class="fas fa-pen"></i></button>
+        </div>
+        <span class="slot-watermark">${i}</span>
+        <div class="slot-bottom">
+          <div class="slot-med-name">${data.nome}</div>
+          <div class="slot-details">
+            <span class="slot-pill"><i class="fas fa-redo"></i> ${data.frequencia}x ao dia</span>
+            <span class="slot-pill"><i class="fas fa-hourglass-half"></i> A cada ${data.intervalo}h</span>
+            <span class="slot-pill"><i class="far fa-clock"></i> ${data.primeira_dose}</span>
+          </div>
+        </div>`;
+      card.addEventListener('click', () => abrirModal(i, true));
     } else {
-        document.getElementById('form-slot').reset();
-        document.getElementById('btn-limpar-slot').style.display = 'none';
+      card.className = 'slot-card empty';
+      card.innerHTML = `
+        <span class="slot-watermark">${i}</span>
+        <div class="slot-top">
+          <span class="slot-num" style="background:rgba(26,110,255,0.08);color:var(--text-soft);">Nicho ${i}</span>
+        </div>
+        <div class="empty-state"><div class="plus-icon"><i class="fas fa-plus"></i></div><span>Toque para adicionar</span></div>`;
+      card.addEventListener('click', () => abrirModal(i, false));
     }
-    document.getElementById('slot-modal').style.display = 'flex';
+    container.appendChild(card);
+  }
 }
 
-function salvarConfigSlot(e) {
-    e.preventDefault();
-    const slotId = document.getElementById('slot-id-hidden').value;
-    
-    set(ref(db, `slots_maleta/slot_${slotId}`), {
-        nome: document.getElementById('slot-nome').value,
-        frequencia: document.getElementById('slot-freq').value,
-        intervalo: document.getElementById('slot-intervalo').value,
-        primeira_dose: document.getElementById('slot-primeira-dose').value,
-        status: 'pending'
-    });
+window.abrirModal = function (id, isEdit) {
+  const data = maletaSlots[`slot_${id}`];
+  document.getElementById('slot-id-hidden').value       = id;
+  document.getElementById('modal-slot-num').textContent = id;
+  if (isEdit && data) {
+    document.getElementById('slot-nome').value           = data.nome          || '';
+    document.getElementById('slot-freq').value           = data.frequencia    || '';
+    document.getElementById('slot-intervalo').value      = data.intervalo     || '';
+    document.getElementById('slot-primeira-dose').value  = data.primeira_dose || '';
+    document.getElementById('btn-limpar-slot').style.display = 'flex';
+  } else {
+    document.getElementById('form-slot').reset();
+    document.getElementById('btn-limpar-slot').style.display = 'none';
+  }
+  document.getElementById('slot-modal').classList.add('open');
+};
 
-    fecharModal();
-    mostrarToast(`Nicho ${slotId} atualizado!`);
+function fecharModal () { document.getElementById('slot-modal').classList.remove('open'); }
+
+function salvarSlot (e) {
+  e.preventDefault();
+  const id = document.getElementById('slot-id-hidden').value;
+  set(ref(db, `slots_maleta/slot_${id}`), {
+    nome:          document.getElementById('slot-nome').value,
+    frequencia:    document.getElementById('slot-freq').value,
+    intervalo:     document.getElementById('slot-intervalo').value,
+    primeira_dose: document.getElementById('slot-primeira-dose').value,
+    status:        'pending'
+  });
+  fecharModal();
+  mostrarToast(`Nicho ${id} atualizado com sucesso!`);
 }
 
-function limparSlot() {
-    const slotId = document.getElementById('slot-id-hidden').value;
-    if(confirm(`Esvaziar o Nicho ${slotId}?`)) {
-        remove(ref(db, `slots_maleta/slot_${slotId}`));
-        fecharModal();
-        mostrarToast(`Nicho ${slotId} limpo.`);
-    }
+function limparSlot () {
+  const id = document.getElementById('slot-id-hidden').value;
+  if (confirm(`Esvaziar o Nicho ${id}? Esta ação não pode ser desfeita.`)) {
+    remove(ref(db, `slots_maleta/slot_${id}`));
+    fecharModal(); mostrarToast(`Nicho ${id} esvaziado.`);
+  }
 }
 
-function fecharModal() { document.getElementById('slot-modal').style.display = 'none'; }
-
-function mostrarToast(msg) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+function mostrarToast (msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 </script>
 </body>
