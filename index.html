@@ -6,25 +6,25 @@
 <title>MedCase — Painel Inteligente</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg-app:       #f0f4fb;
+  --bg-app:       #f8fafc;
   --bg-sidebar:   #ffffff;
   --bg-card:      #ffffff;
   --bg-topbar:    rgba(255,255,255,0.85);
 
-  --blue-600:     #1a6eff;
-  --blue-500:     #3d85ff;
-  --blue-100:     #e8f0ff;
-  --blue-50:      #f2f6ff;
+  --blue-600:     #6366f1; 
+  --blue-500:     #818cf8;
+  --blue-100:     #e0e7ff;
+  --blue-50:      #eef2ff;
 
-  --mint-500:     #00c48c;
-  --mint-100:     #d6f5ec;
+  --mint-500:     #10b981;
+  --mint-100:     #d1fae5;
 
   --amber-500:    #f59e0b;
   --amber-100:    #fef3c7;
@@ -35,35 +35,36 @@
   --purple-500:   #8b5cf6;
   --purple-100:   #ede9fe;
 
-  --text-dark:    #111827;
-  --text-mid:     #4b5563;
-  --text-soft:    #9ca3af;
+  --text-dark:    #1e293b;
+  --text-mid:     #475569;
+  --text-soft:    #94a3b8;
 
-  --border:       #e5eaf2;
-  --shadow-sm:    0 1px 4px rgba(0,0,0,0.06);
-  --shadow-md:    0 4px 20px rgba(0,0,0,0.08);
+  --border:       #e2e8f0;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md:    0 4px 15px rgba(0,0,0,0.05);
 
   --sidebar-w:    260px;
   --radius-lg:    20px;
   --radius-md:    14px;
   --radius-sm:    10px;
 
-  --g1: linear-gradient(135deg, #ff4d6d 0%, #ff8552 100%);
-  --g2: linear-gradient(135deg, #1a6eff 0%, #00c48c 100%);
-  --g3: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-  --g4: linear-gradient(135deg, #00c48c 0%, #0ea5e9 100%);
-  --g5: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-  --g6: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  /* CORES: TONS PASTÉIS SUAVES */
+  --g1: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 100%);
+  --g2: linear-gradient(135deg, #e0fbfc 0%, #c2dfe3 100%);
+  --g3: linear-gradient(135deg, #f3e8ff 0%, #d8b4e2 100%);
+  --g4: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  --g5: linear-gradient(135deg, #fffbeb 0%, #fde68a 100%);
+  --g6: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%);
 }
 
-html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg-app); color: var(--text-dark); overflow-x: hidden; }
+html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg-app); color: var(--text-dark); overflow-x: hidden; }
 
 body::before {
   content: '';
   position: fixed; inset: 0;
-  background-image: radial-gradient(circle, #c8d8f0 1px, transparent 1px);
+  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
   background-size: 28px 28px;
-  opacity: 0.45;
+  opacity: 0.3;
   pointer-events: none;
   z-index: 0;
 }
@@ -79,7 +80,7 @@ body::before {
   padding: 28px 16px;
   position: fixed; top: 0; left: 0; bottom: 0;
   z-index: 50;
-  box-shadow: 2px 0 16px rgba(0,0,0,0.04);
+  box-shadow: 2px 0 16px rgba(0,0,0,0.02);
 }
 
 .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 0 6px; margin-bottom: 40px; }
@@ -89,10 +90,10 @@ body::before {
   background: var(--blue-600);
   border-radius: 12px; display: grid; place-items: center;
   font-size: 1.1rem; color: white;
-  box-shadow: 0 4px 14px rgba(26,110,255,0.35); flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(99,102,241,0.25); flex-shrink: 0;
 }
 
-.logo-text { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-dark); }
+.logo-text { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-dark); }
 .logo-text span { color: var(--blue-600); }
 
 .nav-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-soft); padding: 0 10px; margin-bottom: 8px; }
@@ -110,7 +111,7 @@ body::before {
 
 .nav-item.active {
   background: var(--blue-100); color: var(--blue-600);
-  font-weight: 600; border-color: rgba(26,110,255,0.15);
+  font-weight: 600; border-color: rgba(99,102,241,0.1);
 }
 
 .nav-item.active::before {
@@ -126,12 +127,12 @@ body::before {
 
 .user-avatar {
   width: 36px; height: 36px;
-  background: linear-gradient(135deg, var(--blue-600), var(--mint-500));
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
   border-radius: 50%; display: grid; place-items: center;
   font-weight: 700; font-size: 0.82rem; color: white; flex-shrink: 0;
 }
 
-.user-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--text-dark); }
+.user-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--text-dark); }
 .user-role { font-size: 0.7rem; color: var(--text-soft); margin-top: 1px; }
 
 /* MAIN */
@@ -144,7 +145,7 @@ body::before {
   position: sticky; top: 0; z-index: 40;
 }
 
-.topbar-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-dark); }
+.topbar-title { font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-dark); }
 .topbar-date { font-size: 0.8rem; color: var(--text-soft); display: flex; align-items: center; gap: 7px; margin-top: 2px; }
 .topbar-date i { color: var(--blue-600); font-size: 0.75rem; }
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
@@ -162,7 +163,7 @@ body::before {
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
-.page-heading { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-dark); line-height: 1.1; }
+.page-heading { font-family: 'Poppins', sans-serif; font-size: 1.85rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-dark); line-height: 1.1; }
 .page-heading span { color: var(--blue-600); }
 .page-sub { margin-top: 6px; color: var(--text-soft); font-size: 0.88rem; }
 .page-header { margin-bottom: 30px; }
@@ -182,7 +183,7 @@ body::before {
   background: var(--blue-600); opacity: 0; transition: opacity 0.3s;
 }
 
-.device-card:hover { transform: translateY(-5px); border-color: rgba(26,110,255,0.3); box-shadow: 0 16px 40px rgba(26,110,255,0.1); }
+.device-card:hover { transform: translateY(-5px); border-color: rgba(99,102,241,0.3); box-shadow: 0 16px 40px rgba(99,102,241,0.08); }
 .device-card:hover::before { opacity: 1; }
 
 .device-status {
@@ -191,7 +192,6 @@ body::before {
   margin-bottom: 18px; padding: 3px 10px; border-radius: 20px;
 }
 .device-status.online { background: var(--mint-100); color: var(--mint-500); }
-.device-status.soon   { background: var(--amber-100); color: var(--amber-500); }
 .device-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .device-status.online::before { animation: pulse 2s infinite; }
 
@@ -201,7 +201,7 @@ body::before {
 .device-icon-wrap.blue-icon   { background: var(--blue-100);   color: var(--blue-600);   }
 .device-icon-wrap.purple-icon { background: var(--purple-100); color: var(--purple-500); }
 
-.device-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+.device-title { font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
 .device-desc  { font-size: 0.83rem; color: var(--text-soft); line-height: 1.6; }
 
 .device-arrow {
@@ -226,12 +226,13 @@ body::before {
 .stat-icon.blue   { background: var(--blue-100);   color: var(--blue-600);   }
 .stat-icon.mint   { background: var(--mint-100);   color: var(--mint-500);   }
 .stat-icon.amber  { background: var(--amber-100);  color: var(--amber-500);  }
+.stat-icon.purple { background: var(--purple-100); color: var(--purple-500); }
 
-.stat-value { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.03em; line-height: 1; }
+.stat-value { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.03em; line-height: 1; }
 .stat-label { font-size: 0.72rem; color: var(--text-soft); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
 
-/* MALETA INTERNA */
-#view-maleta-interna { display: none; }
+/* VIEWS INTERNAS */
+#view-maleta-interna, #view-pulseiras-interna { display: none; }
 
 .inner-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
 
@@ -244,152 +245,265 @@ body::before {
 }
 .btn-back:hover { border-color: var(--blue-600); color: var(--blue-600); }
 
-/* SLOT CARDS */
-.slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(285px,1fr)); gap: 18px; }
+/* --- DESIGN MALETA: NEUMÓRFICO MINIMALISTA E CLARO --- */
+.maleta-container {
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  padding: 16px; 
+  border-radius: 28px;
+  box-shadow: 10px 10px 30px #e2e8f0, -10px -10px 30px #ffffff;
+  position: relative; 
+  margin: 30px auto 0;
+  border: 3px solid #ffffff;
+  max-width: 680px; 
+}
+
+.maleta-container::before {
+  content: ''; position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+  width: 140px; height: 22px; 
+  background: linear-gradient(145deg, #f8fafc, #ffffff);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 2px -2px 6px rgba(0,0,0,0.02), inset 0px -2px 4px rgba(0,0,0,0.02); 
+  border: 2px solid #ffffff; border-bottom: none;
+}
+
+.maleta-inner-foam {
+  background: #ffffff; 
+  border-radius: 18px; 
+  padding: 20px;
+  box-shadow: inset 4px 4px 10px #e2e8f0, inset -4px -4px 10px #ffffff;
+  border: 1px solid #f8fafc;
+}
+
+/* --- DISPLAY LED GLOBAL --- */
+.led-panel-internal {
+  background: #0f172a; 
+  border: 2px solid #334155;
+  border-radius: 12px;
+  padding: 12px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Versão menor e centralizada para o Hub das Pulseiras */
+.led-panel-pulseira {
+  max-width: 220px;
+  margin: 0 auto 24px auto;
+  flex-direction: column;
+  padding: 10px 16px;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+}
+.led-panel-pulseira .led-info-left { align-items: center; }
+.led-panel-pulseira .led-med { text-align: center; margin: 0 auto; max-width: 100%; }
+
+.led-panel-internal::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.06), transparent);
+  pointer-events: none;
+}
+.led-info-left { display: flex; flex-direction: column; }
+.led-label { font-size: 0.55rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 4px; }
+.led-time { font-family: 'Share Tech Mono', monospace; font-size: 1.8rem; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3); line-height: 1; }
+.led-med { font-size: 0.85rem; color: #f1f5f9; font-weight: 500; text-align: right; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+
+/* --- CARDS DA MALETA EM TONS PASTÉIS --- */
+.slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; }
 
 .slot-card {
-  border-radius: var(--radius-lg); padding: 26px; position: relative;
-  cursor: pointer; overflow: hidden; min-height: 185px;
+  border-radius: var(--radius-md); padding: 18px; position: relative;
+  cursor: pointer; overflow: hidden; min-height: 140px;
   display: flex; flex-direction: column; justify-content: space-between;
   transition: transform 0.3s cubic-bezier(0.25,0.8,0.25,1), box-shadow 0.3s;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.6);
 }
+.slot-card:hover { transform: translateY(-4px) scale(1.02); }
 
-.slot-card:hover { transform: translateY(-5px) scale(1.01); }
+.slot-card.g1 { background: var(--g1); box-shadow: 0 4px 12px rgba(255, 194, 209, 0.3); }
+.slot-card.g2 { background: var(--g2); box-shadow: 0 4px 12px rgba(194, 223, 227, 0.3); }
+.slot-card.g3 { background: var(--g3); box-shadow: 0 4px 12px rgba(216, 180, 226, 0.3); }
+.slot-card.g4 { background: var(--g4); box-shadow: 0 4px 12px rgba(167, 243, 208, 0.3); }
+.slot-card.g5 { background: var(--g5); box-shadow: 0 4px 12px rgba(253, 230, 138, 0.3); }
+.slot-card.g6 { background: var(--g6); box-shadow: 0 4px 12px rgba(191, 219, 254, 0.3); }
 
-.slot-card.g1 { background: var(--g1); box-shadow: 0 8px 24px rgba(255,77,109,0.28); }
-.slot-card.g2 { background: var(--g2); box-shadow: 0 8px 24px rgba(26,110,255,0.28); }
-.slot-card.g3 { background: var(--g3); box-shadow: 0 8px 24px rgba(139,92,246,0.28); }
-.slot-card.g4 { background: var(--g4); box-shadow: 0 8px 24px rgba(0,196,140,0.28); }
-.slot-card.g5 { background: var(--g5); box-shadow: 0 8px 24px rgba(245,158,11,0.28); }
-.slot-card.g6 { background: var(--g6); box-shadow: 0 8px 24px rgba(99,102,241,0.28); }
+.slot-card.g1:hover { box-shadow: 0 8px 20px rgba(255, 194, 209, 0.5); }
+.slot-card.g2:hover { box-shadow: 0 8px 20px rgba(194, 223, 227, 0.5); }
+.slot-card.g3:hover { box-shadow: 0 8px 20px rgba(216, 180, 226, 0.5); }
+.slot-card.g4:hover { box-shadow: 0 8px 20px rgba(167, 243, 208, 0.5); }
+.slot-card.g5:hover { box-shadow: 0 8px 20px rgba(253, 230, 138, 0.5); }
+.slot-card.g6:hover { box-shadow: 0 8px 20px rgba(191, 219, 254, 0.5); }
 
-.slot-card.g1:hover { box-shadow: 0 18px 40px rgba(255,77,109,0.38); }
-.slot-card.g2:hover { box-shadow: 0 18px 40px rgba(26,110,255,0.38); }
-.slot-card.g3:hover { box-shadow: 0 18px 40px rgba(139,92,246,0.38); }
-.slot-card.g4:hover { box-shadow: 0 18px 40px rgba(0,196,140,0.38); }
-.slot-card.g5:hover { box-shadow: 0 18px 40px rgba(245,158,11,0.38); }
-.slot-card.g6:hover { box-shadow: 0 18px 40px rgba(99,102,241,0.38); }
+.slot-card.empty { background: #f8fafc; border: 2px dashed #cbd5e1; box-shadow: inset 0 2px 5px rgba(0,0,0,0.01); }
+.slot-card.empty:hover { border-color: var(--blue-400); background: #ffffff; box-shadow: 0 4px 12px rgba(99,102,241,0.08); }
+.slot-card.empty .slot-watermark { color: var(--blue-600); opacity: 0.03; }
+.slot-card.empty .slot-num { background: rgba(99,102,241,0.08); color: var(--text-soft); }
 
-.slot-card.empty {
-  background: white; border: 1.5px dashed #d1d9e6; box-shadow: var(--shadow-sm);
-}
-.slot-card.empty:hover { border-color: var(--blue-600); background: var(--blue-50); box-shadow: 0 8px 24px rgba(26,110,255,0.1); }
-
-.slot-watermark {
-  position: absolute; right: -6px; top: -14px;
-  font-size: 6.5rem; font-family: 'Syne', sans-serif; font-weight: 800;
-  opacity: 0.09; line-height: 1; user-select: none; color: white;
-}
-.slot-card.empty .slot-watermark { color: var(--blue-600); opacity: 0.05; }
-
+.slot-watermark { position: absolute; right: -5px; top: -10px; font-size: 5rem; font-family: 'Poppins', sans-serif; font-weight: 800; opacity: 0.05; line-height: 1; user-select: none; color: #1e293b; }
 .slot-top { display: flex; align-items: flex-start; justify-content: space-between; position: relative; z-index: 2; }
-
-.slot-num {
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; color: rgba(255,255,255,0.75);
-  background: rgba(255,255,255,0.18); padding: 3px 9px; border-radius: 20px;
-}
-
-.btn-edit-slot {
-  width: 30px; height: 30px; background: rgba(255,255,255,0.22);
-  border: none; border-radius: 50%; color: white; cursor: pointer;
-  display: grid; place-items: center; font-size: 0.72rem; transition: background 0.2s; z-index: 10;
-}
-.btn-edit-slot:hover { background: rgba(255,255,255,0.4); }
-
+.slot-num { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #334155; background: rgba(255,255,255,0.6); padding: 3px 8px; border-radius: 20px; }
+.btn-edit-slot { width: 26px; height: 26px; background: rgba(255,255,255,0.5); border: none; border-radius: 50%; color: #475569; cursor: pointer; display: grid; place-items: center; font-size: 0.65rem; transition: background 0.2s; z-index: 10; }
+.btn-edit-slot:hover { background: rgba(255,255,255,0.9); }
 .slot-bottom { position: relative; z-index: 2; }
+.slot-med-name { font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 8px; line-height: 1.2; text-shadow: none; }
+.slot-details { display: flex; flex-wrap: wrap; gap: 5px; }
+.slot-pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.5); padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 500; color: #334155; }
+.slot-pill i { font-size: 0.6rem; opacity: 0.7; }
 
-.slot-med-name { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 12px; line-height: 1.2; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 8px; text-align: center; color: var(--text-soft); }
+.plus-icon { width: 34px; height: 34px; border: 2px dashed #cbd5e1; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; transition: all 0.3s; color: #94a3b8; }
+.slot-card.empty:hover .plus-icon { border-color: var(--blue-500); color: var(--blue-500); background: var(--blue-50); }
+.empty-state span { font-size: 0.75rem; font-weight: 500; }
 
-.slot-details { display: flex; flex-wrap: wrap; gap: 7px; }
-
-.slot-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(255,255,255,0.22); backdrop-filter: blur(4px);
-  padding: 4px 10px; border-radius: 20px; font-size: 0.73rem; font-weight: 500; color: white;
+/* --- DESIGN: DOCK DE PULSEIRAS/TAGS --- */
+.dock-container {
+  background: #ffffff;
+  padding: 30px; border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02), inset 0 2px 10px rgba(99,102,241,0.02);
+  position: relative; margin-top: 20px; border: 1px solid var(--border);
+  background-image: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
-.slot-pill i { font-size: 0.65rem; opacity: 0.85; }
-
-.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 10px; color: var(--text-soft); text-align: center; }
-
-.plus-icon {
-  width: 40px; height: 40px; border: 2px dashed #d1d9e6;
-  border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; transition: all 0.3s;
+.dock-indicator {
+  position: absolute; top: 15px; right: 25px;
+  display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; color: var(--text-soft);
 }
-.slot-card.empty:hover .plus-icon { border-color: var(--blue-600); color: var(--blue-600); background: var(--blue-100); }
-.empty-state span { font-size: 0.82rem; font-weight: 500; }
+.dock-indicator i { color: var(--mint-500); animation: pulse 2s infinite; }
 
-/* COMING SOON */
-.coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; gap: 14px; }
-.coming-soon-icon { width: 76px; height: 76px; background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: 24px; display: grid; place-items: center; font-size: 1.9rem; color: var(--blue-600); margin-bottom: 6px; }
-.coming-soon h3 { font-family: 'Syne', sans-serif; font-size: 1.35rem; font-weight: 800; color: var(--text-dark); }
-.coming-soon p  { font-size: 0.86rem; color: var(--text-soft); max-width: 340px; line-height: 1.65; }
-.badge-soon { display: inline-block; background: var(--amber-100); color: var(--amber-500); border: 1px solid rgba(245,158,11,0.25); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; }
+/* --- DESIGN: CARDS NO FORMATO APPLE WATCH --- */
+.watches-grid {
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+  gap: 20px; 
+  justify-items: center;
+}
+
+.watch-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.25,0.8,0.25,1);
+  width: 140px;
+}
+.watch-wrapper:hover { transform: translateY(-5px) scale(1.02); }
+
+/* Pulseiras de Silicone (Cores Gradient Pastéis) */
+.watch-strap { width: 75px; height: 20px; }
+.watch-strap.top { border-radius: 12px 12px 0 0; margin-bottom: -3px; }
+.watch-strap.bottom { border-radius: 0 0 12px 12px; margin-top: -3px; }
+
+/* Classes utilitárias para os gradients nas pulseiras */
+.bg-g1 { background: var(--g1); } .bg-g2 { background: var(--g2); }
+.bg-g3 { background: var(--g3); } .bg-g4 { background: var(--g4); }
+.bg-g5 { background: var(--g5); } .bg-g6 { background: var(--g6); }
+.bg-empty { background: #e2e8f0; }
+
+/* Chassi do Relógio (Tela Clara / Prata) */
+.watch-body {
+  width: 100%;
+  height: 165px;
+  background: #ffffff;
+  border-radius: 32px;
+  border: 4px solid #f1f5f9; 
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 8px 16px rgba(0,0,0,0.05);
+  position: relative;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  z-index: 2;
+}
+.watch-body::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, transparent 100%);
+  pointer-events: none; border-radius: 28px 28px 0 0;
+}
+
+/* Estado vazio do Watch */
+.watch-wrapper.empty .watch-body {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.02), 0 6px 12px rgba(0,0,0,0.03);
+}
+.watch-wrapper.empty:hover .watch-strap { background: var(--blue-100); }
+.watch-wrapper.empty:hover .watch-body { border-color: var(--blue-50); }
+
+.watch-btn-edit {
+  position: absolute; top: 8px; right: 8px;
+  width: 22px; height: 22px; background: #f1f5f9;
+  border: none; border-radius: 50%; color: #94a3b8; cursor: pointer;
+  display: grid; place-items: center; font-size: 0.55rem; transition: background 0.2s; z-index: 10;
+}
+.watch-btn-edit:hover { background: #e2e8f0; color: #475569; }
+
+/* Textos internos do Watch */
+.w-tag-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #94a3b8; text-align: center; }
+.w-med-name { font-family: 'Poppins', sans-serif; font-size: 0.85rem; font-weight: 700; color: #1e293b; text-align: center; line-height: 1.1; margin: 4px 0 0 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* --- NOVO TEMPORIZADOR MENOR E CENTRALIZADO (DENTRO DA PULSEIRA) --- */
+.w-timer-box {
+  background: #0f172a; /* Fundo escuro imitando tela ligada */
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 3px 8px;
+  margin: 6px auto 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+.w-time { 
+  font-family: 'Share Tech Mono', monospace; 
+  font-size: 0.95rem; 
+  color: #10b981; 
+  text-align: center; 
+  line-height: 1;
+  text-shadow: 0 0 5px rgba(16, 185, 129, 0.4);
+}
+
+.w-pills { display: flex; justify-content: center; gap: 4px; }
+.w-pill { background: #f1f5f9; padding: 2px 6px; border-radius: 10px; font-size: 0.55rem; color: #64748b; display: flex; align-items: center; gap: 3px; }
+
 
 /* MODAL */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(17,24,39,0.35); z-index: 1000; place-items: center; backdrop-filter: blur(6px); }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); z-index: 1000; place-items: center; backdrop-filter: blur(6px); }
 .modal-overlay.open { display: grid; }
-
-.modal-box {
-  background: white; border: 1px solid var(--border); border-radius: 24px;
-  padding: 34px; width: 90%; max-width: 470px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.15);
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
+.modal-box { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 34px; width: 90%; max-width: 470px; box-shadow: 0 30px 60px rgba(0,0,0,0.1); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes popIn { from { opacity: 0; transform: scale(0.93) translateY(18px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
 .modal-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
-
-.modal-icon-wrap { width: 40px; height: 40px; background: var(--blue-100); border-radius: var(--radius-sm); display: grid; place-items: center; color: var(--blue-600); font-size: 1rem; flex-shrink: 0; }
-
-.modal-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-dark); }
+.modal-icon-wrap { width: 40px; height: 40px; background: var(--blue-50); border-radius: var(--radius-sm); display: grid; place-items: center; color: var(--blue-600); font-size: 1rem; flex-shrink: 0; }
+.modal-title { font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-dark); }
 .modal-subtitle { font-size: 0.76rem; color: var(--text-soft); margin-top: 2px; }
-
 .field { margin-bottom: 16px; }
-
 .field label { display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 7px; }
-
-.field input {
-  width: 100%; background: var(--bg-app); border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm); padding: 11px 14px;
-  color: var(--text-dark); font-family: 'DM Sans', sans-serif;
-  font-size: 0.92rem; transition: all 0.2s; -webkit-appearance: none;
-}
-.field input:focus { outline: none; border-color: var(--blue-600); background: white; box-shadow: 0 0 0 3px rgba(26,110,255,0.12); }
+.field input { width: 100%; background: #f8fafc; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; color: var(--text-dark); font-family: 'Inter', sans-serif; font-size: 0.92rem; transition: all 0.2s; -webkit-appearance: none; }
+.field input:focus { outline: none; border-color: var(--blue-500); background: white; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
 .field input::placeholder { color: var(--text-soft); }
 .field input[type="time"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.5; }
-
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
 .modal-footer { display: flex; gap: 12px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border); }
-
-.btn { flex: 1; padding: 12px; border-radius: var(--radius-sm); border: none; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
-
+.btn { flex: 1; padding: 12px; border-radius: var(--radius-sm); border: none; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
 .btn-ghost { background: white; border: 1.5px solid var(--border); color: var(--text-mid); }
-.btn-ghost:hover { border-color: var(--rose-500); color: var(--rose-500); background: var(--rose-100); }
-
-.btn-primary { background: var(--blue-600); color: white; box-shadow: 0 4px 14px rgba(26,110,255,0.35); }
-.btn-primary:hover { background: #3580ff; box-shadow: 0 6px 20px rgba(26,110,255,0.45); transform: translateY(-1px); }
+.btn-ghost:hover { border-color: var(--rose-500); color: var(--rose-500); background: var(--rose-50); }
+.btn-primary { background: var(--blue-600); color: white; box-shadow: 0 4px 14px rgba(99,102,241,0.25); }
+.btn-primary:hover { background: var(--blue-500); box-shadow: 0 6px 20px rgba(99,102,241,0.35); transform: translateY(-1px); }
 
 /* TOAST */
-.toast {
-  position: fixed; bottom: 26px; right: 26px;
-  background: white; border: 1px solid var(--mint-100); color: var(--text-dark);
-  padding: 13px 20px; border-radius: var(--radius-md);
-  display: none; align-items: center; gap: 10px;
-  z-index: 3000; font-size: 0.86rem; font-weight: 500;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-width: 210px;
-}
+.toast { position: fixed; bottom: 26px; right: 26px; background: white; border: 1px solid var(--mint-100); color: var(--text-dark); padding: 13px 20px; border-radius: var(--radius-md); display: none; align-items: center; gap: 10px; z-index: 3000; font-size: 0.86rem; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.05); min-width: 210px; }
 .toast.show { display: flex; animation: slideIn 0.3s ease; }
 @keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 .toast i { color: var(--mint-500); font-size: 1rem; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d9e6; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #b0bcd4; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 </style>
 </head>
 
@@ -443,18 +557,18 @@ body::before {
           <p class="page-sub">Selecione um dispositivo para gerenciar sua posologia.</p>
         </div>
         <div class="devices-grid">
-          <div class="device-card" onclick="abrirMaleta()">
+          <div class="device-card" onclick="abrirView('maleta')">
             <div class="device-status online">Online</div>
             <div class="device-icon-wrap blue-icon"><i class="fas fa-medkit"></i></div>
             <div class="device-title">Maleta Inteligente</div>
             <div class="device-desc">6 compartimentos configuráveis sincronizados em tempo real para sua medicação diária.</div>
             <div class="device-arrow"><i class="fas fa-arrow-right"></i></div>
           </div>
-          <div class="device-card" onclick="alert('Módulo Pulseira em desenvolvimento!')">
-            <div class="device-status soon">Em breve</div>
+          <div class="device-card" onclick="abrirView('pulseiras')">
+            <div class="device-status online">Online</div>
             <div class="device-icon-wrap purple-icon"><i class="fas fa-ring"></i></div>
-            <div class="device-title">Pulseira / Tag</div>
-            <div class="device-desc">Sensor compacto para fixar ao frasco de medicamento individual com alerta por vibração.</div>
+            <div class="device-title">Tags Frasco/Pulseira</div>
+            <div class="device-desc">Tags inteligentes ilimitadas para acoplar em frascos individuais com alerta luminoso e sonoro.</div>
             <div class="device-arrow"><i class="fas fa-arrow-right"></i></div>
           </div>
         </div>
@@ -469,25 +583,82 @@ body::before {
         <div class="stats-bar">
           <div class="stat-card">
             <div class="stat-icon blue"><i class="fas fa-box-open"></i></div>
-            <div><div class="stat-value" id="stat-ocupados">—</div><div class="stat-label">Nichos ocupados</div></div>
+            <div><div class="stat-value" id="stat-ocupados-maleta">—</div><div class="stat-label">Nichos ocupados</div></div>
           </div>
           <div class="stat-card">
             <div class="stat-icon mint"><i class="fas fa-pills"></i></div>
-            <div><div class="stat-value" id="stat-livre">—</div><div class="stat-label">Nichos livres</div></div>
+            <div><div class="stat-value" id="stat-livre-maleta">—</div><div class="stat-label">Nichos livres</div></div>
           </div>
           <div class="stat-card">
             <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
-            <div><div class="stat-value" id="stat-doses">—</div><div class="stat-label">Doses / dia</div></div>
+            <div><div class="stat-value" id="stat-doses-maleta">—</div><div class="stat-label">Doses / dia</div></div>
           </div>
         </div>
 
         <div class="inner-header">
           <span style="font-size:0.82rem; color:var(--text-soft);">6 compartimentos disponíveis</span>
-          <button class="btn-back" onclick="fecharMaleta()"><i class="fas fa-arrow-left"></i> Voltar</button>
+          <button class="btn-back" onclick="voltarParaProdutos()"><i class="fas fa-arrow-left"></i> Voltar</button>
         </div>
 
-        <div class="slots-grid" id="slots-visual-grid"></div>
+        <div class="maleta-container">
+          <div class="maleta-inner-foam">
+            
+            <div class="led-panel-internal">
+              <div class="led-info-left">
+                <span class="led-label">Próxima Dose • Maleta</span>
+                <span class="led-time" id="led-next-time-maleta">--:--</span>
+              </div>
+              <div class="led-med" id="led-next-med-maleta">Aguardando Sist.</div>
+            </div>
+
+            <div class="slots-grid" id="maleta-visual-grid"></div>
+            
+          </div>
+        </div>
       </div>
+
+      <div id="view-pulseiras-interna">
+        <div class="page-header">
+          <h1 class="page-heading">Tags <span>Frasco</span></h1>
+          <p class="page-sub">Cadastre novas tags (tipo Apple Watch) conforme adquirir e anexe-as aos frascos.</p>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-icon purple"><i class="fas fa-tags"></i></div>
+            <div><div class="stat-value" id="stat-ocupados-pulseira">—</div><div class="stat-label">Tags em uso</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon mint"><i class="fas fa-check-circle"></i></div>
+            <div><div class="stat-value" id="stat-total-pulseira">—</div><div class="stat-label">Total Cadastrado</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+            <div><div class="stat-value" id="stat-doses-pulseira">—</div><div class="stat-label">Doses / dia</div></div>
+          </div>
+        </div>
+
+        <div class="inner-header">
+          <span style="font-size:0.82rem; color:var(--text-soft);">Hub Central de Tags</span>
+          <button class="btn-back" onclick="voltarParaProdutos()"><i class="fas fa-arrow-left"></i> Voltar</button>
+        </div>
+
+        <div class="dock-container">
+          <div class="dock-indicator"><i class="fas fa-wifi"></i> Hub Sincronizado</div>
+          
+          <div class="led-panel-internal led-panel-pulseira">
+            <div class="led-info-left">
+              <span class="led-label">Próxima Dose Geral</span>
+              <span class="led-time" id="led-next-time-pulseira">--:--</span>
+            </div>
+            <div class="led-med" id="led-next-med-pulseira">Aguardando Sist.</div>
+          </div>
+
+          <div class="watches-grid" id="pulseiras-visual-grid"></div>
+
+        </div>
+      </div>
+
     </section>
 
     <section id="tab-notificacoes" class="page">
@@ -508,9 +679,9 @@ body::before {
 <div id="slot-modal" class="modal-overlay">
   <div class="modal-box">
     <div class="modal-heading">
-      <div class="modal-icon-wrap"><i class="fas fa-pills"></i></div>
+      <div class="modal-icon-wrap" id="modal-icon"><i class="fas fa-pills"></i></div>
       <div>
-        <div class="modal-title">Configurar Nicho <span id="modal-slot-num"></span></div>
+        <div class="modal-title"><span id="modal-title-text">Configurar</span> <span id="modal-slot-num"></span></div>
         <div class="modal-subtitle">Preencha a posologia do medicamento</div>
       </div>
     </div>
@@ -529,8 +700,8 @@ body::before {
         <input type="time" id="slot-primeira-dose" required>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-ghost" id="btn-limpar-slot"><i class="fas fa-trash-alt"></i> Esvaziar</button>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Salvar Posologia</button>
+        <button type="button" class="btn btn-ghost" id="btn-limpar-slot"><i class="fas fa-trash-alt"></i> Excluir</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Salvar</button>
       </div>
     </form>
   </div>
@@ -545,13 +716,18 @@ import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/
 const firebaseConfig = { databaseURL: "https://medcase-9213d-default-rtdb.firebaseio.com/" };
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
-const SLOTS = 6;
+
+const SLOTS_MALETA = 6;
 let maletaSlots = {};
+let pulseiraTags = {};
+let dispositivoAtualEditando = 'maleta'; 
+let ledInterval;
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('current-date').textContent =
     new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
 
+  // Navegação Lateral
   document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
     item.addEventListener('click', () => {
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -559,14 +735,30 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.add('active');
       document.getElementById(item.dataset.tab).classList.add('active');
       document.getElementById('topbar-title').textContent = item.textContent.trim().replace(/\d+/,'').trim();
+      voltarParaProdutos(); 
     });
   });
 
+  // Listeners do Firebase (Maleta)
   onValue(ref(db, 'slots_maleta'), snapshot => {
     maletaSlots = snapshot.val() || {};
-    renderSlots(); updateStats();
+    renderMaleta(); 
+    updateStats('maleta');
+    atualizarTudo();
   });
 
+  // Listeners do Firebase (Pulseiras)
+  onValue(ref(db, 'tags_pulseira'), snapshot => {
+    pulseiraTags = snapshot.val() || {};
+    renderPulseiras(); 
+    updateStats('pulseira');
+    atualizarTudo();
+  });
+
+  // Atualizador a cada 1 minuto
+  ledInterval = setInterval(atualizarTudo, 60000);
+
+  // Eventos do Modal
   document.getElementById('form-slot').addEventListener('submit', salvarSlot);
   document.getElementById('btn-limpar-slot').addEventListener('click', limparSlot);
   document.getElementById('slot-modal').addEventListener('click', e => {
@@ -574,65 +766,243 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-window.abrirMaleta = function () {
+// Calcula a próxima dose para UM único medicamento
+function calcularProximaDoseUnica(data) {
+  if (!data || !data.primeira_dose || !data.intervalo || !data.frequencia) return "--:--";
+  const agora = new Date();
+  let menorTempo = Infinity;
+  let proximaHora = data.primeira_dose; 
+
+  const [hh, mm] = data.primeira_dose.split(':').map(Number);
+  const freq = parseInt(data.frequencia);
+  const intervaloMs = parseInt(data.intervalo) * 60 * 60 * 1000;
+
+  let doseDate = new Date();
+  doseDate.setHours(hh, mm, 0, 0);
+
+  for (let i = 0; i < freq; i++) {
+    const horaDoseMs = doseDate.getTime() + (i * intervaloMs);
+    if (horaDoseMs > agora.getTime() && horaDoseMs < menorTempo) {
+      menorTempo = horaDoseMs;
+      const d = new Date(horaDoseMs);
+      proximaHora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+  }
+  return proximaHora;
+}
+
+// Atualiza tanto os painéis globais quanto os reloginhos individuais
+function atualizarTudo() {
+  const agora = new Date();
+
+  function buscarMaisProximo(dataSet) {
+    let menorTempo = Infinity;
+    let proximoRemedio = "Livre hoje";
+    let proximaHora = "--:--";
+
+    for (let key in dataSet) {
+      const data = dataSet[key];
+      if (!data.nome || !data.primeira_dose || !data.intervalo || !data.frequencia) continue;
+
+      const [hh, mm] = data.primeira_dose.split(':').map(Number);
+      const freq = parseInt(data.frequencia);
+      const intervaloMs = parseInt(data.intervalo) * 60 * 60 * 1000;
+
+      let doseDate = new Date();
+      doseDate.setHours(hh, mm, 0, 0);
+
+      for (let i = 0; i < freq; i++) {
+        const horaDoseMs = doseDate.getTime() + (i * intervaloMs);
+        if (horaDoseMs > agora.getTime() && horaDoseMs < menorTempo) {
+          menorTempo = horaDoseMs;
+          proximoRemedio = data.nome;
+          const d = new Date(horaDoseMs);
+          proximaHora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+      }
+    }
+    return { proximaHora, proximoRemedio };
+  }
+
+  // Atualiza LED da Maleta
+  const calcMaleta = buscarMaisProximo(maletaSlots);
+  document.getElementById('led-next-time-maleta').textContent = calcMaleta.proximaHora;
+  document.getElementById('led-next-med-maleta').textContent = calcMaleta.proximoRemedio;
+
+  // Atualiza LED do Hub da Pulseira
+  const calcPulseira = buscarMaisProximo(pulseiraTags);
+  document.getElementById('led-next-time-pulseira').textContent = calcPulseira.proximaHora;
+  document.getElementById('led-next-med-pulseira').textContent = calcPulseira.proximoRemedio;
+
+  // Re-renderiza para atualizar os temporizadores internos das pulseiras
+  renderPulseiras();
+}
+
+// Controle de Views
+window.abrirView = function (dispositivo) {
   document.getElementById('view-produtos').style.display = 'none';
-  document.getElementById('view-maleta-interna').style.display = 'block';
+  if (dispositivo === 'maleta') {
+    document.getElementById('view-maleta-interna').style.display = 'block';
+  } else if (dispositivo === 'pulseiras') {
+    document.getElementById('view-pulseiras-interna').style.display = 'block';
+  }
 };
 
-window.fecharMaleta = function () {
+window.voltarParaProdutos = function () {
   document.getElementById('view-maleta-interna').style.display = 'none';
+  document.getElementById('view-pulseiras-interna').style.display = 'none';
   document.getElementById('view-produtos').style.display = 'block';
 };
 
-function updateStats () {
-  const ocupados = Object.keys(maletaSlots).filter(k => maletaSlots[k]?.nome).length;
-  document.getElementById('stat-ocupados').textContent = ocupados;
-  document.getElementById('stat-livre').textContent    = SLOTS - ocupados;
-  document.getElementById('stat-doses').textContent    =
-    Object.values(maletaSlots).filter(s=>s?.frequencia).reduce((a,s)=>a+Number(s.frequencia),0);
+// Atualização de Estatísticas
+function updateStats (tipo) {
+  const dataMap = tipo === 'maleta' ? maletaSlots : pulseiraTags;
+  const doses = Object.values(dataMap).filter(s => s?.frequencia).reduce((a, s) => a + Number(s.frequencia), 0);
+
+  if (tipo === 'maleta') {
+    const ocupados = Object.keys(dataMap).filter(k => dataMap[k]?.nome).length;
+    document.getElementById('stat-ocupados-maleta').textContent = ocupados;
+    document.getElementById('stat-livre-maleta').textContent    = SLOTS_MALETA - ocupados;
+    document.getElementById('stat-doses-maleta').textContent    = doses;
+  } else {
+    const totalTags = Object.keys(dataMap).filter(k => k.startsWith('tag_')).length;
+    const ocupados = Object.keys(dataMap).filter(k => dataMap[k]?.nome).length;
+    document.getElementById('stat-ocupados-pulseira').textContent = ocupados;
+    document.getElementById('stat-total-pulseira').textContent    = totalTags;
+    document.getElementById('stat-doses-pulseira').textContent    = doses;
+  }
 }
 
-function renderSlots () {
-  const container = document.getElementById('slots-visual-grid');
+// Renderização Fixa da Maleta
+function renderMaleta() {
+  const container = document.getElementById('maleta-visual-grid');
+  if (!container) return;
   container.innerHTML = '';
-  for (let i = 1; i <= SLOTS; i++) {
+  
+  for (let i = 1; i <= SLOTS_MALETA; i++) {
     const data = maletaSlots[`slot_${i}`];
     const card = document.createElement('div');
+    
     if (data?.nome) {
       card.className = `slot-card g${i}`;
       card.innerHTML = `
         <div class="slot-top">
           <span class="slot-num">Nicho ${i}</span>
-          <button class="btn-edit-slot" onclick="event.stopPropagation(); abrirModal(${i}, true)"><i class="fas fa-pen"></i></button>
+          <button class="btn-edit-slot" onclick="event.stopPropagation(); abrirModal(${i}, true, 'maleta')"><i class="fas fa-pen"></i></button>
         </div>
         <span class="slot-watermark">${i}</span>
         <div class="slot-bottom">
           <div class="slot-med-name">${data.nome}</div>
           <div class="slot-details">
-            <span class="slot-pill"><i class="fas fa-redo"></i> ${data.frequencia}x ao dia</span>
-            <span class="slot-pill"><i class="fas fa-hourglass-half"></i> A cada ${data.intervalo}h</span>
+            <span class="slot-pill"><i class="fas fa-redo"></i> ${data.frequencia}x/dia</span>
+            <span class="slot-pill"><i class="fas fa-hourglass-half"></i> ${data.intervalo}h</span>
             <span class="slot-pill"><i class="far fa-clock"></i> ${data.primeira_dose}</span>
           </div>
         </div>`;
-      card.addEventListener('click', () => abrirModal(i, true));
+      card.addEventListener('click', () => abrirModal(i, true, 'maleta'));
     } else {
       card.className = 'slot-card empty';
       card.innerHTML = `
         <span class="slot-watermark">${i}</span>
         <div class="slot-top">
-          <span class="slot-num" style="background:rgba(26,110,255,0.08);color:var(--text-soft);">Nicho ${i}</span>
+          <span class="slot-num">Nicho ${i}</span>
         </div>
-        <div class="empty-state"><div class="plus-icon"><i class="fas fa-plus"></i></div><span>Toque para adicionar</span></div>`;
-      card.addEventListener('click', () => abrirModal(i, false));
+        <div class="empty-state"><div class="plus-icon"><i class="fas fa-plus"></i></div><span>Configurar</span></div>`;
+      card.addEventListener('click', () => abrirModal(i, false, 'maleta'));
     }
     container.appendChild(card);
   }
 }
 
-window.abrirModal = function (id, isEdit) {
-  const data = maletaSlots[`slot_${id}`];
-  document.getElementById('slot-id-hidden').value       = id;
+// Renderização Dinâmica das Pulseiras (Formato Apple Watch)
+function renderPulseiras() {
+  const container = document.getElementById('pulseiras-visual-grid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const keys = Object.keys(pulseiraTags).filter(k => k.startsWith('tag_'));
+  let maxId = 0;
+  const ids = keys.map(k => parseInt(k.replace('tag_', ''))).filter(n => !isNaN(n)).sort((a,b) => a - b);
+
+  ids.forEach(i => {
+    const data = pulseiraTags[`tag_${i}`];
+    maxId = Math.max(maxId, i);
+    let colorIndex = (i % 6) + 1;
+    
+    // AQUI: Calcula a próxima dose individual para colocar no meio do relógio
+    let proxHora = calcularProximaDoseUnica(data);
+
+    const card = document.createElement('div');
+    if (data?.nome) {
+      card.className = `watch-wrapper`;
+      card.innerHTML = `
+        <div class="watch-strap top bg-g${colorIndex}"></div>
+        <div class="watch-body">
+          <button class="watch-btn-edit" onclick="event.stopPropagation(); abrirModal(${i}, true, 'pulseira')"><i class="fas fa-pen"></i></button>
+          <div class="w-tag-label">TAG ${i}</div>
+          
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:2; width:100%;">
+            <div class="w-med-name" title="${data.nome}">${data.nome}</div>
+            
+            <div class="w-timer-box" title="Próxima Dose">
+              <span class="w-time">${proxHora}</span>
+            </div>
+          </div>
+
+          <div class="w-pills" style="z-index:2;">
+            <span class="w-pill"><i class="fas fa-redo"></i> ${data.frequencia}x</span>
+            <span class="w-pill"><i class="fas fa-link"></i> ${data.intervalo}h</span>
+          </div>
+        </div>
+        <div class="watch-strap bottom bg-g${colorIndex}"></div>`;
+      card.addEventListener('click', () => abrirModal(i, true, 'pulseira'));
+    } else {
+      card.className = 'watch-wrapper empty';
+      card.innerHTML = `
+        <div class="watch-strap top bg-empty"></div>
+        <div class="watch-body">
+          <div class="w-tag-label">TAG ${i}</div>
+          <div class="empty-state" style="margin-top: 15px; z-index:2;">
+            <div class="plus-icon" style="width: 28px; height: 28px; border-color: #cbd5e1; color:#94a3b8;"><i class="fas fa-plus"></i></div>
+            <span style="color:#94a3b8;">Configurar</span>
+          </div>
+        </div>
+        <div class="watch-strap bottom bg-empty"></div>`;
+      card.addEventListener('click', () => abrirModal(i, false, 'pulseira'));
+    }
+    container.appendChild(card);
+  });
+
+  // Card Especial: Adicionar Novo Apple Watch
+  const nextId = maxId + 1;
+  const addCard = document.createElement('div');
+  addCard.className = 'watch-wrapper empty';
+  addCard.innerHTML = `
+    <div class="watch-strap top bg-empty"></div>
+    <div class="watch-body" style="background: #f8fafc; border-color: #e2e8f0; box-shadow: none;">
+      <div class="empty-state" style="justify-content: center; height: 100%; z-index:2;">
+        <div class="plus-icon" style="margin-bottom: 8px; width: 34px; height: 34px; border-color: #cbd5e1; color: #94a3b8;"><i class="fas fa-plus"></i></div>
+        <span style="font-weight: 600; color: #64748b; font-size: 0.8rem;">Nova Tag</span>
+      </div>
+    </div>
+    <div class="watch-strap bottom bg-empty"></div>`;
+  addCard.addEventListener('click', () => abrirModal(nextId, false, 'pulseira'));
+  container.appendChild(addCard);
+}
+
+// Lógica do Modal Unificado
+window.abrirModal = function (id, isEdit, tipo) {
+  dispositivoAtualEditando = tipo;
+  
+  const prefixId = tipo === 'maleta' ? 'slot' : 'tag';
+  const dataMap = tipo === 'maleta' ? maletaSlots : pulseiraTags;
+  const data = dataMap[`${prefixId}_${id}`];
+
+  document.getElementById('slot-id-hidden').value = id;
   document.getElementById('modal-slot-num').textContent = id;
+  document.getElementById('modal-title-text').textContent = tipo === 'maleta' ? 'Configurar Nicho' : 'Configurar Tag';
+  document.getElementById('modal-icon').innerHTML = tipo === 'maleta' ? '<i class="fas fa-pills"></i>' : '<i class="fas fa-clock"></i>';
+
   if (isEdit && data) {
     document.getElementById('slot-nome').value           = data.nome          || '';
     document.getElementById('slot-freq').value           = data.frequencia    || '';
@@ -651,22 +1021,31 @@ function fecharModal () { document.getElementById('slot-modal').classList.remove
 function salvarSlot (e) {
   e.preventDefault();
   const id = document.getElementById('slot-id-hidden').value;
-  set(ref(db, `slots_maleta/slot_${id}`), {
+  const caminho = dispositivoAtualEditando === 'maleta' ? `slots_maleta/slot_${id}` : `tags_pulseira/tag_${id}`;
+  const label = dispositivoAtualEditando === 'maleta' ? 'Nicho' : 'Tag';
+
+  set(ref(db, caminho), {
     nome:          document.getElementById('slot-nome').value,
     frequencia:    document.getElementById('slot-freq').value,
     intervalo:     document.getElementById('slot-intervalo').value,
     primeira_dose: document.getElementById('slot-primeira-dose').value,
     status:        'pending'
   });
+  
   fecharModal();
-  mostrarToast(`Nicho ${id} atualizado com sucesso!`);
+  mostrarToast(`${label} ${id} salvo com sucesso!`);
 }
 
 function limparSlot () {
   const id = document.getElementById('slot-id-hidden').value;
-  if (confirm(`Esvaziar o Nicho ${id}? Esta ação não pode ser desfeita.`)) {
-    remove(ref(db, `slots_maleta/slot_${id}`));
-    fecharModal(); mostrarToast(`Nicho ${id} esvaziado.`);
+  const caminho = dispositivoAtualEditando === 'maleta' ? `slots_maleta/slot_${id}` : `tags_pulseira/tag_${id}`;
+  const label = dispositivoAtualEditando === 'maleta' ? 'Nicho' : 'Tag';
+  const acao = dispositivoAtualEditando === 'maleta' ? 'Esvaziar' : 'Excluir definitivamente';
+
+  if (confirm(`${acao} a ${label} ${id}? Esta ação não pode ser desfeita.`)) {
+    remove(ref(db, caminho));
+    fecharModal(); 
+    mostrarToast(`${label} ${id} removida.`);
   }
 }
 
