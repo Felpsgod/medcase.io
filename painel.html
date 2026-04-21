@@ -837,10 +837,10 @@ async function registrarNotificacao(titulo, mensagem) {
 
 // --- DISPARAR PUSH DIRETO VIA API REST DO ONESIGNAL ---
 async function enviarPushOneSignal(titulo, mensagem) {
-    const REST_API_KEY = "os_v2_app_a3gll2qw4bghffqskrqpbf56iiejy3kqqfoueueq7xxmpy3k5kicsymg6hok2yy3omh2x52n36prg6gilgbzsf3pbogs7cpvrop7aoq"; 
+    const REST_API_KEY = "os_v2_app_a3gll2qw4bghffqskrqpbf56iik5tfz76hsudt5w2fohwdsrxmajssdh2dmw5tcamsw4pyjxvxrigzgcojnitdewfgg7dgzjb42wfli"; 
     const APP_ID = "06ccb5ea-16e0-4c72-9612-5460f097be42";
 
-    if(REST_API_KEY === "os_v2_app_a3gll2qw4bghffqskrqpbf56iiejy3kqqfoueueq7xxmpy3k5kicsymg6hok2yy3omh2x52n36prg6gilgbzsf3pbogs7cpvrop7aoq") {
+    if(REST_API_KEY === "os_v2_app_a3gll2qw4bghffqskrqpbf56iik5tfz76hsudt5w2fohwdsrxmajssdh2dmw5tcamsw4pyjxvxrigzgcojnitdewfgg7dgzjb42wfli") {
         console.warn("Aviso: REST API Key não configurada. O Push não será enviado ao celular.");
         return;
     }
