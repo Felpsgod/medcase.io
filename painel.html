@@ -21,7 +21,7 @@
       appId: "06ccb5ea-16e0-4c72-9612-5460f097be42",
       safari_web_id: "web.onesignal.auto.245258f0-6c6a-439f-986f-895149dbff04",
       notifyButton: {
-        enable: true,
+        enable: false, // Desativado o sino flutuante nativo para usar nosso próprio botão
       },
     });
   });
@@ -155,19 +155,19 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .dash-left { display: flex; flex-direction: column; gap: 24px; }
 .dash-welcome { display: flex; justify-content: space-between; align-items: flex-start; }
 .dash-welcome h1 { font-family: 'Poppins', sans-serif; font-size: 2.2rem; font-weight: 700; line-height: 1.2; color: var(--text-dark); }
-.badge-healthy { display: inline-flex; align-items: center; gap: 6px; background: rgba(4, 191, 138, 0.1); color: var(--c-green); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
+.badge-healthy { display: inline-flex; align-items: center; gap: 6px; background: rgba(4, 191, 138, 0.1); color: var(--c-green); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-top: 10px; }
 
 .dash-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.dash-card { background: white; border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); }
+.dash-card { background: white; border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); overflow: hidden; }
 .dash-card-title { font-size: 0.85rem; color: var(--text-soft); font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-.chart-line-value { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: baseline; gap: 5px; }
-.chart-line-value span { font-size: 1rem; color: var(--text-soft); font-weight: 500; }
+.chart-line-value { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: baseline; gap: 5px; flex-wrap: wrap;}
+.chart-line-value span { font-size: 1rem; color: var(--text-soft); font-weight: 500; white-space: nowrap; }
 .visual-line { height: 60px; margin-top: 20px; position: relative; display: flex; align-items: flex-end; gap: 8px; }
 .visual-line span { flex: 1; background: var(--text-soft); border-radius: 4px; opacity: 0.2; transition: 0.5s; }
 
-.visual-bars { display: flex; align-items: flex-end; justify-content: space-between; height: 60px; margin-top: 20px; }
-.bar-col { width: 8px; border-radius: 4px; background: var(--c-pink-light); }
+.visual-bars { display: flex; align-items: flex-end; justify-content: space-between; height: 60px; margin-top: 20px; gap: 4px; }
+.bar-col { flex: 1; border-radius: 4px; background: var(--c-pink-light); }
 .bar-col:nth-child(1) { height: 40%; background: var(--c-pink-dark); } 
 .bar-col:nth-child(2) { height: 60%; background: var(--c-pink-light); } 
 .bar-col:nth-child(3) { height: 80%; background: var(--c-green); } 
@@ -205,7 +205,7 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .time-col { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--text-mid); font-weight: 600; display: flex; align-items: center; gap: 6px; padding-left: 10px; }
 
 /* Cores da Timeline */
-.event-card { border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-left: 10px; transition: 0.2s; background: white;}
+.event-card { border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-left: 10px; transition: 0.2s; background: white; gap: 10px;}
 .tl-c1 { border-left: 5px solid #F2A2A9; background: linear-gradient(90deg, rgba(242,162,169,0.08) 0%, white 100%); }
 .tl-c2 { border-left: 5px solid #04BF8A; background: linear-gradient(90deg, rgba(4,191,138,0.08) 0%, white 100%); }
 .tl-c3 { border-left: 5px solid #F2BE7E; background: linear-gradient(90deg, rgba(242,190,126,0.08) 0%, white 100%); }
@@ -213,10 +213,11 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .tl-c5 { border-left: 5px solid #FF9A9E; background: linear-gradient(90deg, rgba(255,154,158,0.08) 0%, white 100%); }
 .tl-c6 { border-left: 5px solid #a18cd1; background: linear-gradient(90deg, rgba(161,140,209,0.08) 0%, white 100%); }
 
-.event-info h4 { font-family: 'Poppins', sans-serif; font-size: 0.95rem; color: var(--text-dark); margin-bottom: 2px; }
+.event-info { flex: 1; overflow: hidden; }
+.event-info h4 { font-family: 'Poppins', sans-serif; font-size: 0.95rem; color: var(--text-dark); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .event-info p { font-size: 0.75rem; color: var(--text-mid); display: flex; align-items: center; gap: 4px; }
 .event-card.taken { opacity: 0.6; filter: grayscale(50%); }
-.btn-tomar { background: var(--c-dark); color: white; border: none; padding: 6px 14px; border-radius: 12px; font-weight: 600; font-size: 0.75rem; cursor: pointer; transition: 0.2s; }
+.btn-tomar { background: var(--c-dark); color: white; border: none; padding: 6px 14px; border-radius: 12px; font-weight: 600; font-size: 0.75rem; cursor: pointer; transition: 0.2s; white-space: nowrap; }
 .btn-tomar:hover { background: var(--c-green); transform: translateY(-2px); }
 .icon-taken { color: var(--c-green); font-size: 1.2rem; }
 
@@ -234,7 +235,7 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 
 /* VIEWS INTERNAS */
 #view-maleta-interna, #view-pulseiras-interna { display: none; }
-.inner-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.inner-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 10px; }
 .btn-back { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; background: white; border-radius: var(--radius-sm); color: var(--text-dark); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); border: none; }
 .btn-back:hover { background: var(--c-bg); }
 
@@ -245,12 +246,12 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; align-items: stretch;}
 
 /* DISPLAY LED */
-.led-panel-internal { background: var(--c-dark); border-radius: 16px; padding: 14px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); }
+.led-panel-internal { background: var(--c-dark); border-radius: 16px; padding: 14px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); gap: 10px;}
 .led-panel-pulseira { max-width: 260px; margin: 0 auto 24px auto; flex-direction: column; padding: 12px 20px; justify-content: center; text-align: center; gap: 6px; }
 .led-info-left { display: flex; flex-direction: column; }
 .led-label { font-size: 0.6rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
 .led-time { font-family: 'Share Tech Mono', monospace; font-size: 1.5rem; color: var(--c-lime); text-shadow: 0 0 10px rgba(171, 209, 100, 0.4); line-height: 1; display:flex; align-items:center; gap:8px;}
-.led-med { font-size: 0.9rem; color: white; font-weight: 500; text-align: right; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.led-med { font-size: 0.9rem; color: white; font-weight: 500; text-align: right; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* CARDS MALETA & CORES ÚNICAS */
 .slot-card { border-radius: var(--radius-md); padding: 18px; position: relative; cursor: pointer; overflow: hidden; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s; border: 1px solid rgba(255,255,255,0.6); }
@@ -329,9 +330,9 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .btn-agora { background: var(--c-orange); color: white; border: none; padding: 0 16px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; transition: 0.2s; height: 46px; flex-shrink: 0; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(255, 138, 0, 0.2);}
 .btn-agora:hover { background: #e07900; transform: translateY(-2px); }
 
-.contact-card { background: white; border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); }
+.contact-card { background: white; border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); flex-wrap: wrap;}
 .contact-icon { width: 50px; height: 50px; border-radius: 50%; background: var(--grad-1); display: grid; place-items: center; color: white; font-size: 1.2rem; flex-shrink: 0; }
-.contact-info { flex: 1; overflow: hidden; }
+.contact-info { flex: 1; min-width: 150px; overflow: hidden; }
 .contact-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .contact-type { font-size: 0.75rem; color: var(--c-pink-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
 .contact-phone { font-size: 0.85rem; color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
@@ -351,8 +352,8 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .profile-pic-container:hover .profile-pic-overlay { opacity: 1; }
 
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.modal-footer { display: flex; gap: 12px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border); }
-.btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.modal-footer { display: flex; gap: 12px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border); flex-wrap: wrap;}
+.btn { flex: 1; min-width: 120px; padding: 12px; border-radius: 12px; border: none; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-ghost { background: var(--c-bg); color: var(--text-mid); }
 .btn-ghost:hover { background: #e2e8f0; color: var(--text-dark); }
 .btn-primary { background: var(--c-dark); color: white; }
@@ -379,16 +380,29 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-100%); width: 280px; z-index: 9999; border-radius: 0; }
   .sidebar.mobile-open { transform: translateX(0); }
-  .main { margin-left: 0 !important; width: 100vw; padding: 15px; }
+  .main { margin-left: 0 !important; width: 100vw; padding: 10px; }
   .topbar-nav { display: none; }
   .mobile-menu-btn { display: block; }
-  .dash-layout { grid-template-columns: 1fr; }
+  .dash-layout { grid-template-columns: 1fr; gap: 15px;}
+  .dash-welcome { flex-direction: column; align-items: stretch; gap: 15px;}
+  .dash-welcome h1 { font-size: 1.5rem; }
   .dash-charts { grid-template-columns: 1fr; gap: 15px; }
+  .dash-card { padding: 16px; }
+  .dash-promo { padding: 20px; min-height: auto; }
+  .dash-promo h3 { max-width: 100%; font-size: 1.2rem; }
   .cal-days span, .cal-numbers div { font-size: 0.8rem; }
   .slots-grid { grid-template-columns: 1fr; }
   .watches-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
   .sidebar-overlay.show { opacity: 1; pointer-events: all; }
-  .dropdown-menu { right: -50px; min-width: 260px; }
+  .dropdown-menu { right: -10px; min-width: 260px; }
+  .device-card { padding: 20px; }
+  .maleta-container { padding: 15px; margin-top: 15px;}
+  .led-panel-internal { flex-direction: column; text-align: center; justify-content: center;}
+  .led-med { text-align: center; }
+  .page-heading { font-size: 1.4rem; flex-wrap: wrap; }
+  .contact-card { flex-direction: column; text-align: center; }
+  .contact-actions { width: 100%; justify-content: center; margin-top: 10px; }
+  .modal-box { padding: 24px; width: 95%; }
 }
 </style>
 </head>
@@ -478,7 +492,7 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
             <div style="background: white; padding: 12px 20px; border-radius: 16px; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 15px; cursor: pointer;">
               <div style="width: 36px; height: 36px; background: var(--grad-1); border-radius: 10px; display: grid; place-items: center; color: white;"><i class="fas fa-folder-medical"></i></div>
               <div style="font-weight: 700; font-size: 0.9rem; line-height: 1.2;">Relatório<br>Pessoal</div>
-              <i class="fas fa-download" style="color: var(--text-soft); margin-left: 10px;"></i>
+              <i class="fas fa-download" style="color: var(--text-soft); margin-left: auto;"></i>
             </div>
           </div>
 
@@ -621,7 +635,7 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
       <div style="display: grid; gap: 20px; max-width: 500px;">
           <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 30px;">
             <h3 style="font-family: 'Poppins', sans-serif; margin-bottom: 10px;"><i class="fas fa-mobile-alt" style="color: var(--c-green);"></i> Notificações no Celular</h3>
-            <p style="color: var(--text-soft); margin-bottom: 20px; font-size: 0.9rem;">Para receber alertas no celular, instale este app (Compartilhar > Adicionar à Tela de Início) e ative a permissão abaixo.</p>
+            <p style="color: var(--text-soft); margin-bottom: 20px; font-size: 0.9rem;">Para o iPhone aceitar notificações, você precisa: <br>1. Adicionar este site à Tela de Início.<br>2. Abrir pelo ícone novo.<br>3. Clicar no botão abaixo.</p>
             <button class="btn btn-primary" onclick="pedirPermissaoNotificacao()" style="width: 100%; background: var(--c-green);"><i class="fas fa-bell"></i> Ativar Push Notifications</button>
           </div>
 
@@ -813,24 +827,30 @@ function preencherHoraAgora(id) {
     document.getElementById(id).value = agora.toTimeString().slice(0, 5);
 }
 
-// --- ONESIGNAL PUSH PERMISSION ---
-function pedirPermissaoNotificacao() {
-    if(window.OneSignalDeferred) {
-        OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.Slidedown.promptPush();
-            mostrarToast("Inscrição de notificações iniciada no dispositivo.");
-        });
-    } else {
-        alert("OneSignal não está carregado. Verifique a conexão com a internet ou insira o App ID no código.");
-    }
-}
-
-// --- NOTIFICAÇÕES (SISTEMA INTERNO) ---
+// --- NOTIFICAÇÕES (SISTEMA INTERNO FIREBASE) ---
 async function registrarNotificacao(titulo, mensagem) {
     const id = Date.now();
     const novaNotif = { titulo, mensagem, data: new Date().toISOString(), lida: false };
     await putData(`notificacoes/notif_${id}`, novaNotif);
     carregarDados();
+}
+
+// --- ONESIGNAL PUSH PERMISSION ATUALIZADO PARA iOS ---
+function pedirPermissaoNotificacao() {
+    if(window.OneSignalDeferred) {
+        OneSignalDeferred.push(async function(OneSignal) {
+            try {
+                // Comando atualizado v16 que força a permissão nativa em PWAs iOS
+                await OneSignal.Notifications.requestPermission();
+                mostrarToast("Inscrição de notificações finalizada.");
+                registrarNotificacao("Sistema de Alertas", "Permissão para Notificações Push configurada neste dispositivo.");
+            } catch(e) {
+                alert("Erro ao pedir permissão. No iPhone, lembre-se de abrir o app pelo ícone da Tela de Início.");
+            }
+        });
+    } else {
+        alert("Carregando sistema de notificações. Verifique a internet.");
+    }
 }
 
 function renderizarNotificacoes() {
@@ -841,7 +861,7 @@ function renderizarNotificacoes() {
 
     if(arr.length === 0) {
         if(drop) drop.innerHTML='<div style="padding:10px;text-align:center;color:#999;font-size:0.85rem;">Nenhuma notificação</div>';
-        if(page) page.innerHTML='<p style="text-align:center;color:#888;padding:40px 0;">Histórico vazio.</p>';
+        if(page) page.innerHTML='<p style="text-align:center;color:#888;padding:40px 0;">Nenhum registro de sistema no momento.</p>';
         if(dot) dot.style.display='none';
         return;
     }
@@ -850,7 +870,8 @@ function renderizarNotificacoes() {
     let htmlD='', htmlP='';
     arr.forEach((n, i) => {
         let horaFormatada = new Date(n.data).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        let item = `<div class="notif-item"><strong>${n.titulo} <span class="notif-time-badge">${horaFormatada}</span></strong><small>${n.mensagem}</small></div>`;
+        let dataFormatada = new Date(n.data).toLocaleDateString();
+        let item = `<div class="notif-item"><strong>${n.titulo} <span class="notif-time-badge">${dataFormatada} ${horaFormatada}</span></strong><small>${n.mensagem}</small></div>`;
         if(i < 5) htmlD += item;
         htmlP += item;
     });
@@ -932,6 +953,7 @@ function salvarPerfil() {
       loadUserProfile();
       fecharModais();
       mostrarToast('Perfil Atualizado com sucesso!');
+      registrarNotificacao("Perfil", "Os dados do seu perfil foram atualizados.");
   }
 }
 
@@ -1098,7 +1120,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-sintomas').addEventListener('submit', salvarSintomasDose);
   document.getElementById('sintomas-modal').addEventListener('click', e => { if (e.target === document.getElementById('sintomas-modal')) fecharModalSintomas(); });
 
-  // EVENTO DE SALVAR CONTATO (NOVO E EDITADO)
   const formContato = document.getElementById('form-contato');
   if(formContato) formContato.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1114,10 +1135,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       
       await putData(`contatos/${id}`, contato);
-      
-      if(!isEdit) {
-          await registrarNotificacao("Acompanhamento", `${contato.nome} foi adicionado aos contatos.`);
-      }
+      await registrarNotificacao("Acompanhamento", isEdit ? `${contato.nome} teve o contato atualizado.` : `${contato.nome} foi adicionado aos contatos.`);
       
       fecharModais();
       mostrarToast(isEdit ? "Contato atualizado!" : "Contato cadastrado!");
@@ -1506,6 +1524,7 @@ function renderizarContatos() {
 window.deletarContato = async function(id) {
     if(confirm("Remover este acompanhamento?")) {
         if(await deleteData(`contatos/${id}`)) {
+            await registrarNotificacao("Contato Removido", "O acompanhamento foi excluído com sucesso.");
             carregarDados();
             mostrarToast("Contato removido!");
         }
@@ -1553,9 +1572,10 @@ window.salvarSlot = async function(e) {
   const id = document.getElementById('slot-id-hidden').value;
   const tipo = document.getElementById('slot-tipo-hidden').value;
   const dataAtual = (tipo === 'maleta' ? maletaSlots : pulseiraTags)[`${tipo === 'maleta' ? 'slot' : 'tag'}_${id}`];
+  const nomeRemedio = document.getElementById('slot-nome').value;
   
   const dadosParaSalvar = {
-    nome: document.getElementById('slot-nome').value,
+    nome: nomeRemedio,
     data_limite: document.getElementById('slot-data-limite').value,
     historico_tomadas: dataAtual?.historico_tomadas || {}, 
     tipo_posologia: currentPosologyType
@@ -1576,6 +1596,7 @@ window.salvarSlot = async function(e) {
   }
 
   if (await putData(tipo === 'maleta' ? `slots_maleta/slot_${id}` : `tags_pulseira/tag_${id}`, dadosParaSalvar)) {
+    await registrarNotificacao("Medicamento Salvo", `${nomeRemedio} configurado no nicho/tag ${id}.`);
     fecharModal(); mostrarToast(`Salvo com sucesso!`); carregarDados();
   }
 }
@@ -1583,8 +1604,11 @@ window.salvarSlot = async function(e) {
 window.limparSlot = async function() {
   const id = document.getElementById('slot-id-hidden').value;
   const tipo = document.getElementById('slot-tipo-hidden').value;
+  const nomeRemedio = document.getElementById('slot-nome').value;
+  
   if (confirm(`Remover este medicamento?`)) {
     if (await deleteData(tipo === 'maleta' ? `slots_maleta/slot_${id}` : `tags_pulseira/tag_${id}`)) {
+      await registrarNotificacao("Medicamento Removido", `${nomeRemedio} foi excluído da sua rotina.`);
       fecharModal(); mostrarToast(`Removido.`); carregarDados();
     }
   }
@@ -1636,6 +1660,8 @@ window.reiniciarSimulacao = async function() {
   if (!confirm('Isto vai apagar TODO o histórico de tomadas. Deseja continuar?')) return;
   for (let i = 1; i <= SLOTS_MALETA; i++) if (maletaSlots[`slot_${i}`]?.nome) await patchData(`slots_maleta/slot_${i}`, { historico_tomadas: null });
   for (let key in pulseiraTags) if (pulseiraTags[key]?.nome) await patchData(`tags_pulseira/${key}`, { historico_tomadas: null });
+  
+  await registrarNotificacao("Sistema de Alertas", "Histórico de tomadas reiniciado com sucesso.");
   carregarDados(); mostrarToast('Histórico reiniciado!');
 };
 
