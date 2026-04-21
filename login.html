@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Acesso — MedCase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --c-pink-dark: #F272C5; --c-green: #04BF8A; --c-bg: #F2F2F2; 
+        --c-dark: #181818; --text-mid: #555555; --text-soft: #999999;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--c-dark); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    
+    .auth-container { position: relative; width: 100%; max-width: 400px; }
+    .auth-card {
+        background: white; width: 100%; padding: 40px; border-radius: 30px; 
+        text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        opacity: 0; pointer-events: none; visibility: hidden;
+    }
+    .auth-card.active { opacity: 1; pointer-events: all; visibility: visible; position: relative; transform: translate(-50%, 0); left: 50%; top: 0; }
+    
+    .auth-card h2 { font-family: 'Poppins', sans-serif; font-size: 2rem; color: var(--c-dark); margin-bottom: 5px; }
+    .auth-field { margin-bottom: 16px; text-align: left; }
+    .auth-field label { font-size: 0.75rem; font-weight: 700; color: var(--text-mid); display: block; margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .auth-field input { 
+        width: 100%; padding: 14px; background: var(--c-bg); border: 2px solid transparent; 
+        border-radius: 15px; outline: none; transition: 0.3s; font-family: 'Inter', sans-serif; font-size: 0.95rem;
+    }
+    .auth-field input:focus { border-color: var(--c-green); background: white; }
+    .btn-auth { 
+        width: 100%; padding: 16px; background: var(--c-dark); color: white; 
+        border: none; border-radius: 15px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 10px; display: flex; justify-content: center; gap: 10px; align-items: center;
+    }
+    .btn-auth:hover { background: black; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .divider { height: 1px; background: #eee; margin: 25px 0; }
+    .switch-link { font-size: 0.9rem; color: var(--text-mid); }
+    .switch-link strong { color: var(--c-green); cursor: pointer; transition: 0.2s; }
+    .switch-link strong:hover { color: var(--c-dark); }
+</style>
+</head>
+<body>
+
+<div class="auth-container">
+    
+    <div id="card-login" class="auth-card active">
+        <h2>MedCase <span style="color: var(--c-pink-dark)">●</span></h2>
+        <p style="color: var(--text-soft); font-size: 0.9rem; margin-bottom: 30px;">Seu assistente pessoal de saúde.</p>
+        
+        <div class="auth-field"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
+        <div class="auth-field"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+        
+        <button class="btn-auth" onclick="handleLogin()">Acessar Painel <i class="fas fa-arrow-right"></i></button>
+        <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-soft); cursor: pointer;" onclick="alert('Enviamos um link de recuperação para seu e-mail.')">Esqueci minha senha</p>
+        
+        <div class="divider"></div>
+        <p class="switch-link">Não tem uma conta? <strong onclick="toggleCards('card-register')">Criar agora</strong></p>
+    </div>
+
+    <div id="card-register" class="auth-card">
+        <h2>Criar Conta</h2>
+        <p style="color: var(--text-soft); font-size: 0.9rem; margin-bottom: 24px;">Configure seu acesso pessoal.</p>
+        
+        <div class="auth-field"><label>Seu Nome</label><input type="text" id="reg-name" placeholder="Ex: Maikol"></div>
+        <div class="auth-field"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
+        <div class="auth-field"><label>Senha</label><input type="password" id="reg-pass" placeholder="Crie uma senha forte"></div>
+        
+        <button class="btn-auth" onclick="handleRegister()">Concluir Cadastro</button>
+        
+        <div class="divider"></div>
+        <p class="switch-link">Já possui conta? <strong onclick="toggleCards('card-login')">Fazer Login</strong></p>
+    </div>
+
+</div>
+
+<script>
+    if(localStorage.getItem('medcase_auth') === 'true') { window.location.href = 'painel.html'; }
+
+    function toggleCards(targetId) {
+        document.querySelectorAll('.auth-card').forEach(c => c.classList.remove('active'));
+        document.getElementById(targetId).classList.add('active');
+    }
+
+    function handleRegister() {
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
+
+        if(!name || !email.includes('@') || pass.length < 4) {
+            return alert("Preencha todos os campos corretamente.");
+        }
+
+        // Cria o perfil do usuário
+        const userProfile = { nome: name, email: email, senha: pass, telefone: '', foto: '' };
+        localStorage.setItem('medcase_user', JSON.stringify(userProfile));
+        localStorage.setItem('medcase_auth', 'true');
+        
+        alert("Conta criada com sucesso! Redirecionando...");
+        window.location.href = 'painel.html';
+    }
+
+    function handleLogin() {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        
+        const savedData = localStorage.getItem('medcase_user');
+        
+        if (savedData) {
+            const user = JSON.parse(savedData);
+            if(user.email === email && user.senha === pass) {
+                localStorage.setItem('medcase_auth', 'true');
+                window.location.href = 'painel.html';
+                return;
+            }
+        }
+        alert("E-mail ou senha incorretos.");
+    }
+</script>
+</body>
+</html>
