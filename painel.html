@@ -18,9 +18,11 @@
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
-      appId: "COLOQUE_SEU_APP_ID_AQUI", // <-- Substitua pelo App ID do OneSignal
-      safari_web_id: "", 
-      notifyButton: { enable: false } 
+      appId: "06ccb5ea-16e0-4c72-9612-5460f097be42",
+      safari_web_id: "web.onesignal.auto.245258f0-6c6a-439f-986f-895149dbff04",
+      notifyButton: {
+        enable: true,
+      },
     });
   });
 </script>
@@ -333,8 +335,14 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .contact-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .contact-type { font-size: 0.75rem; color: var(--c-pink-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
 .contact-phone { font-size: 0.85rem; color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
-.btn-del-contact { background: var(--c-bg); border: none; width: 34px; height: 34px; border-radius: 10px; color: var(--c-pink-dark); cursor: pointer; transition: 0.2s; }
+
+/* BOTÕES DE AÇÃO DOS CONTATOS */
+.contact-actions { display: flex; gap: 8px; }
+.btn-edit-contact, .btn-del-contact { border: none; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: grid; place-items: center; }
+.btn-del-contact { background: var(--c-bg); color: var(--c-pink-dark); }
 .btn-del-contact:hover { background: #ffe4eb; }
+.btn-edit-contact { background: var(--c-bg); color: var(--c-green); }
+.btn-edit-contact:hover { background: rgba(4, 191, 138, 0.1); }
 
 /* FOTO DE PERFIL NO MODAL */
 .profile-pic-container { width: 90px; height: 90px; border-radius: 50%; background: var(--grad-2); margin: 0 auto 24px; position: relative; cursor: pointer; overflow: hidden; display: grid; place-items: center; color: white; font-size: 2.2rem; font-weight: 700; box-shadow: var(--shadow-sm); }
@@ -590,10 +598,14 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
     </section>
 
     <section id="tab-contatos" class="page">
-      <div class="page-header">
-        <h1 class="page-heading">Acompanhamento Familiar/Médico <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="abrirModalGenerico('modal-contato')"><i class="fas fa-plus"></i> Novo Contato</button></h1>
-        <p class="page-sub">Adicione pessoas de confiança. Elas serão notificadas automaticamente quando você registrar a tomada do seu medicamento.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 24px;">
+        <div style="flex: 1; min-width: 250px;">
+          <h1 style="font-family: 'Poppins', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--text-dark); margin-bottom: 5px;">Acompanhamento</h1>
+          <p style="color: var(--text-mid); font-size: 0.9rem;">Adicione familiares e médicos. Eles serão notificados automaticamente.</p>
+        </div>
+        <button class="btn btn-primary" style="width: auto; padding: 10px 20px; white-space: nowrap;" onclick="abrirModalContato()"><i class="fas fa-plus"></i> Novo Contato</button>
       </div>
+      
       <div id="lista-contatos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
           </div>
     </section>
@@ -609,7 +621,7 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
       <div style="display: grid; gap: 20px; max-width: 500px;">
           <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 30px;">
             <h3 style="font-family: 'Poppins', sans-serif; margin-bottom: 10px;"><i class="fas fa-mobile-alt" style="color: var(--c-green);"></i> Notificações no Celular</h3>
-            <p style="color: var(--text-soft); margin-bottom: 20px; font-size: 0.9rem;">Para receber alertas no iPhone, instale este app (Compartilhar > Adicionar à Tela de Início) e ative a permissão abaixo.</p>
+            <p style="color: var(--text-soft); margin-bottom: 20px; font-size: 0.9rem;">Para receber alertas no celular, instale este app (Compartilhar > Adicionar à Tela de Início) e ative a permissão abaixo.</p>
             <button class="btn btn-primary" onclick="pedirPermissaoNotificacao()" style="width: 100%; background: var(--c-green);"><i class="fas fa-bell"></i> Ativar Push Notifications</button>
           </div>
 
@@ -627,9 +639,10 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
   <div class="modal-box">
     <div class="modal-heading">
       <div class="modal-icon-wrap" style="background: rgba(242, 190, 126, 0.2); color: var(--c-orange);"><i class="fas fa-user-md"></i></div>
-      <div><div class="modal-title">Novo Contato</div><div class="modal-subtitle">Quem será avisado?</div></div>
+      <div><div class="modal-title" id="modal-contato-title">Novo Contato</div><div class="modal-subtitle">Quem será avisado?</div></div>
     </div>
     <form id="form-contato">
+        <input type="hidden" id="contato-id-hidden">
         <div class="field"><label>Tipo de Contato</label><select id="contato-tipo" required><option value="Familiar">Familiar / Cuidador</option><option value="Médico">Médico(a)</option></select></div>
         <div class="field"><label>Nome</label><input type="text" id="contato-nome" placeholder="Ex: Dra. Ana" required></div>
         <div class="field"><label>WhatsApp / Celular</label><input type="text" id="contato-telefone" placeholder="(11) 99999-9999" required></div>
@@ -808,7 +821,7 @@ function pedirPermissaoNotificacao() {
             mostrarToast("Inscrição de notificações iniciada no dispositivo.");
         });
     } else {
-        alert("OneSignal não está carregado. Verifique a conexão com a internet.");
+        alert("OneSignal não está carregado. Verifique a conexão com a internet ou insira o App ID no código.");
     }
 }
 
@@ -925,7 +938,7 @@ function salvarPerfil() {
 function handleLogout() {
   if(confirm("Deseja sair da conta?")) {
       localStorage.removeItem('medcase_auth');
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
   }
 }
 function handlePasswordReset() { alert("Código de recuperação enviado para seu e-mail."); }
@@ -1085,20 +1098,29 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-sintomas').addEventListener('submit', salvarSintomasDose);
   document.getElementById('sintomas-modal').addEventListener('click', e => { if (e.target === document.getElementById('sintomas-modal')) fecharModalSintomas(); });
 
-  // EVENTO DE CONTATOS
+  // EVENTO DE SALVAR CONTATO (NOVO E EDITADO)
   const formContato = document.getElementById('form-contato');
   if(formContato) formContato.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const id = Date.now();
+      
+      let id = document.getElementById('contato-id-hidden').value;
+      const isEdit = id !== "";
+      if(!isEdit) id = `c_${Date.now()}`;
+      
       const contato = {
           tipo: document.getElementById('contato-tipo').value,
           nome: document.getElementById('contato-nome').value,
           telefone: document.getElementById('contato-telefone').value
       };
-      await putData(`contatos/c_${id}`, contato);
-      await registrarNotificacao("Acompanhamento", `${contato.nome} foi adicionado aos contatos.`);
+      
+      await putData(`contatos/${id}`, contato);
+      
+      if(!isEdit) {
+          await registrarNotificacao("Acompanhamento", `${contato.nome} foi adicionado aos contatos.`);
+      }
+      
       fecharModais();
-      mostrarToast("Contato cadastrado!");
+      mostrarToast(isEdit ? "Contato atualizado!" : "Contato cadastrado!");
       carregarDados();
   });
 });
@@ -1145,7 +1167,7 @@ window.addCustomTimeInput = function(val = '') {
   div.style.marginBottom = '10px';
   const isReq = currentPosologyType === 'custom' ? 'required' : '';
   const isDis = currentPosologyType === 'custom' ? '' : 'disabled';
-  div.innerHTML = `<input type="time" class="custom-time-val" value="${val}" ${isReq} ${isDis} style="flex:1;"><button type="button" class="btn-ghost" style="padding:10px;color:red;" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+  div.innerHTML = `<input type="time" class="custom-time-val" value="${val}" ${isReq} ${isDis} style="flex:1;"><button type="button" class="btn-remove-time" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
   container.appendChild(div);
 }
 
@@ -1430,21 +1452,41 @@ function renderPulseiras() {
   container.appendChild(addCard);
 }
 
-// --- RENDERIZAÇÃO DE CONTATOS ---
+// --- RENDERIZAÇÃO E EDIÇÃO DE CONTATOS ---
+window.abrirModalContato = function(id = null) {
+    document.getElementById('form-contato').reset();
+    
+    if(id && listaContatos[id]) {
+        document.getElementById('modal-contato-title').innerText = "Editar Contato";
+        document.getElementById('contato-id-hidden').value = id;
+        document.getElementById('contato-tipo').value = listaContatos[id].tipo;
+        document.getElementById('contato-nome').value = listaContatos[id].nome;
+        document.getElementById('contato-telefone').value = listaContatos[id].telefone;
+    } else {
+        document.getElementById('modal-contato-title').innerText = "Novo Contato";
+        document.getElementById('contato-id-hidden').value = "";
+    }
+    
+    abrirModalGenerico('modal-contato');
+}
+
 function renderizarContatos() {
     const grid = document.getElementById('lista-contatos-grid');
     if(!grid) return;
     grid.innerHTML = '';
     const keys = Object.keys(listaContatos);
+    
     if(keys.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-soft); grid-column: 1/-1;">Nenhum contato cadastrado.</p>';
+        grid.innerHTML = '<p style="color:var(--text-soft); grid-column: 1/-1;">Nenhum contato cadastrado. Adicione familiares ou médicos.</p>';
         return;
     }
+    
     keys.forEach(k => {
         const c = listaContatos[k];
         const isMed = c.tipo === 'Médico';
         const col = isMed ? 'var(--c-green)' : 'var(--c-orange)';
         const ico = isMed ? 'fa-user-md' : 'fa-home';
+        
         grid.innerHTML += `
         <div class="contact-card">
             <div class="contact-icon" style="background:${col}"><i class="fas ${ico}"></i></div>
@@ -1453,15 +1495,20 @@ function renderizarContatos() {
                 <div class="contact-name">${c.nome}</div>
                 <div class="contact-phone"><i class="fab fa-whatsapp"></i> ${c.telefone}</div>
             </div>
-            <button class="btn-del-contact" onclick="deletarContato('${k}')"><i class="fas fa-trash"></i></button>
+            <div class="contact-actions">
+                <button class="btn-edit-contact" onclick="abrirModalContato('${k}')" title="Editar"><i class="fas fa-pen"></i></button>
+                <button class="btn-del-contact" onclick="deletarContato('${k}')" title="Excluir"><i class="fas fa-trash"></i></button>
+            </div>
         </div>`;
     });
 }
 
 window.deletarContato = async function(id) {
     if(confirm("Remover este acompanhamento?")) {
-        await deleteData(`contatos/${id}`);
-        carregarDados();
+        if(await deleteData(`contatos/${id}`)) {
+            carregarDados();
+            mostrarToast("Contato removido!");
+        }
     }
 }
 
