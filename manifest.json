@@ -1,0 +1,15 @@
+{
+  "name": "MedCase Painel",
+  "short_name": "MedCase",
+  "start_url": "./painel.html",
+  "display": "standalone",
+  "background_color": "#181818",
+  "theme_color": "#04BF8A",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2809/2809804.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
