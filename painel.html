@@ -807,6 +807,86 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
 
 <script>
+// ==========================================
+// CONFIGURAÇÃO MULTI-TENANT (POR USUÁRIO)
+// ==========================================
+let USER_ID = "usuario_padrao";
+const DB_BASE = "https://appatividades-7450d-default-rtdb.firebaseio.com/usuarios_medcase";
+
+// Busca o usuário logado e cria um ID seguro
+const savedUserAuth = localStorage.getItem('medcase_user');
+if (savedUserAuth) {
+    try {
+        const userObj = JSON.parse(savedUserAuth);
+        if (userObj.email) {
+            // O Firebase não permite . # $ [ ] na URL, então substituímos por underline
+            USER_ID = userObj.email.replace(/[\.\#\$\[\]]/g, '_'); 
+        }
+    } catch(e) {
+        console.error("Erro ao ler usuário:", e);
+    }
+}
+
+// Chaves API
+const REST_API_KEY = "SUA_REST_API_KEY_AQUI"; 
+const APP_ID = "06ccb5ea-16e0-4c72-9612-5460f097be42";
+
+// Variáveis Globais
+let maletaSlots = {};
+let pulseiraTags = {};
+let listaContatos = {};
+let notificacoesList = {};
+let currentPosologyType = 'fixo'; 
+const colorPalette = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8'];
+let usedColors = [];
+const SLOTS_MALETA = 6;
+let dataAtualBase = new Date();
+let dataSelecionada = new Date();
+const mesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+function getUniqueColor() {
+  let available = colorPalette.filter(c => !usedColors.includes(c));
+  if (available.length === 0) { usedColors = []; available = colorPalette; }
+  let chosen = available[0];
+  usedColors.push(chosen);
+  return chosen;
+}
+
+function safeSetText(id, text) {
+  const el = document.getElementById(id);
+  if(el) el.innerHTML = text;
+}
+
+// ==========================================
+// REQUISIÇÕES FIREBASE ISOLADAS POR USUÁRIO
+// ==========================================
+async function fetchData() {
+  try { const response = await fetch(`${DB_BASE}/${USER_ID}.json`); return await response.json() || {}; } catch (e) { return {}; }
+}
+async function putData(path, data) {
+  try { const response = await fetch(`${DB_BASE}/${USER_ID}/${path}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return response.ok; } catch (e) { return false; }
+}
+async function patchData(path, data) {
+  try { const response = await fetch(`${DB_BASE}/${USER_ID}/${path}.json`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return response.ok; } catch (e) { return false; }
+}
+async function deleteData(path) {
+  try { const response = await fetch(`${DB_BASE}/${USER_ID}/${path}.json`, { method: 'DELETE' }); return response.ok; } catch (e) { return false; }
+}
+
+async function carregarDados() {
+  const data = await fetchData();
+  maletaSlots = data.slots_maleta || {};
+  pulseiraTags = data.tags_pulseira || {};
+  listaContatos = data.contatos || {};
+  notificacoesList = data.notificacoes || {};
+  usedColors = []; 
+  renderMaleta(); 
+  renderPulseiras(); 
+  atualizarDashboard();
+  renderizarContatos();
+  renderizarNotificacoes();
+}
+
 // --- FUNÇÃO PARA FORMATAR HORA AM/PM COM ÍCONES ---
 function formatarHoraAMPM(hora24) {
   if (!hora24) return '';
@@ -821,7 +901,6 @@ function formatarHoraAMPM(hora24) {
   return `${icon} ${h.toString().padStart(2, '0')}:${m} ${ampm}`;
 }
 
-// --- PREENCHER HORA AGORA ---
 function preencherHoraAgora(id) {
     const agora = new Date();
     document.getElementById(id).value = agora.toTimeString().slice(0, 5);
@@ -837,11 +916,8 @@ async function registrarNotificacao(titulo, mensagem) {
 
 // --- DISPARAR PUSH DIRETO VIA API REST DO ONESIGNAL ---
 async function enviarPushOneSignal(titulo, mensagem) {
-    const REST_API_KEY = "os_v2_app_a3gll2qw4bghffqskrqpbf56iik5tfz76hsudt5w2fohwdsrxmajssdh2dmw5tcamsw4pyjxvxrigzgcojnitdewfgg7dgzjb42wfli"; 
-    const APP_ID = "06ccb5ea-16e0-4c72-9612-5460f097be42";
-
-    if(REST_API_KEY === "os_v2_app_a3gll2qw4bghffqskrqpbf56iik5tfz76hsudt5w2fohwdsrxmajssdh2dmw5tcamsw4pyjxvxrigzgcojnitdewfgg7dgzjb42wfli") {
-        console.warn("Aviso: REST API Key não configurada. O Push não será enviado ao celular.");
+    if(REST_API_KEY === "SUA_REST_API_KEY_AQUI") {
+        console.warn("Aviso: REST API Key não configurada. O Push não será enviado.");
         return;
     }
 
@@ -864,7 +940,7 @@ async function enviarPushOneSignal(titulo, mensagem) {
     }
 }
 
-// --- ONESIGNAL PUSH PERMISSION ATUALIZADO PARA iOS ---
+// --- ONESIGNAL PUSH PERMISSION ---
 function pedirPermissaoNotificacao() {
     if(window.OneSignalDeferred) {
         OneSignalDeferred.push(async function(OneSignal) {
@@ -911,14 +987,14 @@ function renderizarNotificacoes() {
 let currentPhotoBase64 = "";
 
 function loadUserProfile() {
-  const savedData = localStorage.getItem('medcase_user');
-  if(savedData) {
-      const user = JSON.parse(savedData);
+  if(savedUserAuth) {
+      const user = JSON.parse(savedUserAuth);
       const firstName = user.nome.split(' ')[0];
       const initials = firstName.substring(0, 2).toUpperCase();
       
       safeSetText('top-user-name', firstName);
       safeSetText('dash-user-name', firstName);
+      document.getElementById('perfil-email').value = user.email || '';
       
       if(user.foto && user.foto !== '') {
           document.getElementById('top-avatar-img').src = user.foto;
@@ -933,11 +1009,9 @@ function loadUserProfile() {
 }
 
 function abrirModalPerfil() {
-  const savedData = localStorage.getItem('medcase_user');
-  if(savedData) {
-      const user = JSON.parse(savedData);
+  if(savedUserAuth) {
+      const user = JSON.parse(savedUserAuth);
       document.getElementById('perfil-nome').value = user.nome || '';
-      document.getElementById('perfil-email').value = user.email || '';
       document.getElementById('perfil-telefone').value = user.telefone || '';
       
       if(user.foto && user.foto !== '') {
@@ -970,9 +1044,8 @@ function previewImage(event) {
 }
 
 function salvarPerfil() {
-  const savedData = localStorage.getItem('medcase_user');
-  if(savedData) {
-      const user = JSON.parse(savedData);
+  if(savedUserAuth) {
+      const user = JSON.parse(savedUserAuth);
       user.nome = document.getElementById('perfil-nome').value;
       user.telefone = document.getElementById('perfil-telefone').value;
       user.foto = currentPhotoBase64;
@@ -992,34 +1065,6 @@ function handleLogout() {
   }
 }
 function handlePasswordReset() { alert("Código de recuperação enviado para seu e-mail."); }
-
-const FIREBASE_URL = "https://appatividades-7450d-default-rtdb.firebaseio.com/medcase.json";
-const SLOTS_MALETA = 6;
-let maletaSlots = {};
-let pulseiraTags = {};
-let listaContatos = {};
-let notificacoesList = {};
-let currentPosologyType = 'fixo'; 
-
-const colorPalette = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8'];
-let usedColors = [];
-
-function getUniqueColor() {
-  let available = colorPalette.filter(c => !usedColors.includes(c));
-  if (available.length === 0) { usedColors = []; available = colorPalette; }
-  let chosen = available[0];
-  usedColors.push(chosen);
-  return chosen;
-}
-
-let dataAtualBase = new Date();
-let dataSelecionada = new Date();
-const mesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-
-function safeSetText(id, text) {
-  const el = document.getElementById(id);
-  if(el) el.innerHTML = text;
-}
 
 window.toggleSidebar = function() {
   if (window.innerWidth <= 768) {
@@ -1106,33 +1151,6 @@ window.renderCalendar = function() {
 window.mudarSemana = function(direcao) {
   dataAtualBase.setDate(dataAtualBase.getDate() + (direcao * 7));
   renderCalendar();
-}
-
-async function fetchData() {
-  try { const response = await fetch(FIREBASE_URL); return await response.json() || {}; } catch (e) { return {}; }
-}
-async function putData(path, data) {
-  try { const response = await fetch(FIREBASE_URL.replace('.json', `/${path}.json`), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return response.ok; } catch (e) { return false; }
-}
-async function patchData(path, data) {
-  try { const response = await fetch(FIREBASE_URL.replace('.json', `/${path}.json`), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return response.ok; } catch (e) { return false; }
-}
-async function deleteData(path) {
-  try { const response = await fetch(FIREBASE_URL.replace('.json', `/${path}.json`), { method: 'DELETE' }); return response.ok; } catch (e) { return false; }
-}
-
-async function carregarDados() {
-  const data = await fetchData();
-  maletaSlots = data.slots_maleta || {};
-  pulseiraTags = data.tags_pulseira || {};
-  listaContatos = data.contatos || {};
-  notificacoesList = data.notificacoes || {};
-  usedColors = []; 
-  renderMaleta(); 
-  renderPulseiras(); 
-  atualizarDashboard();
-  renderizarContatos();
-  renderizarNotificacoes();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1623,7 +1641,7 @@ window.salvarSlot = async function(e) {
     dadosParaSalvar.primeira_dose = null;
   }
 
-  // NOVA LINHA PARA FACILITAR O INTEGROMAT/MAKE:
+  // ARRAY LIMPA PARA O MAKE/INTEGROMAT LER
   dadosParaSalvar.horarios_calculados = getHorariosDoDia(dadosParaSalvar);
 
   if (await putData(tipo === 'maleta' ? `slots_maleta/slot_${id}` : `tags_pulseira/tag_${id}`, dadosParaSalvar)) {
