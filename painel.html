@@ -21,7 +21,7 @@
       appId: "06ccb5ea-16e0-4c72-9612-5460f097be42",
       safari_web_id: "web.onesignal.auto.245258f0-6c6a-439f-986f-895149dbff04",
       notifyButton: {
-        enable: false, // Desativado o sino flutuante nativo para usar nosso próprio botão
+        enable: false, 
       },
     });
   });
@@ -835,6 +835,37 @@ async function registrarNotificacao(titulo, mensagem) {
     carregarDados();
 }
 
+// --- NOVA FUNÇÃO: DISPARAR PUSH DIRETO VIA API REST DO ONESIGNAL ---
+async function enviarPushOneSignal(titulo, mensagem) {
+    // ATENÇÃO MAIKOL: COLE A SUA REST API KEY DO ONESIGNAL AQUI. 
+    // Fica no painel OneSignal > Settings > Keys & IDs
+    const REST_API_KEY = "os_v2_app_a3gll2qw4bghffqskrqpbf56iilztqgqjwmuvg5k526bu3xzx3btcerp4hettmpukkssoxlznmm6374e47b5vivkbs7b3f32khlaw7q"; 
+    const APP_ID = "06ccb5ea-16e0-4c72-9612-5460f097be42";
+
+    if(REST_API_KEY === "os_v2_app_a3gll2qw4bghffqskrqpbf56iilztqgqjwmuvg5k526bu3xzx3btcerp4hettmpukkssoxlznmm6374e47b5vivkbs7b3f32khlaw7q") {
+        console.warn("Aviso: REST API Key não configurada. O Push não será enviado ao celular.");
+        return;
+    }
+
+    try {
+        await fetch("https://onesignal.com/api/v1/notifications", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                "Authorization": `Basic ${REST_API_KEY}`
+            },
+            body: JSON.stringify({
+                app_id: APP_ID,
+                included_segments: ["All"], // Envia para todos os dispositivos inscritos
+                headings: {"en": titulo, "pt": titulo},
+                contents: {"en": mensagem, "pt": mensagem}
+            })
+        });
+    } catch(e) {
+        console.error("Erro ao disparar push no OneSignal:", e);
+    }
+}
+
 // --- ONESIGNAL PUSH PERMISSION ATUALIZADO PARA iOS ---
 function pedirPermissaoNotificacao() {
     if(window.OneSignalDeferred) {
@@ -1643,8 +1674,13 @@ window.salvarSintomasDose = async function(e) {
   const caminho = tipo === 'maleta' ? `slots_maleta/slot_${id}/historico_tomadas/${doseKey}` : `tags_pulseira/tag_${id}/historico_tomadas/${doseKey}`;
   
   if(await patchData(caminho, { tomado: true, hora_real: horaReal, sintomas: sintomas, registro_salvo_em: new Date().toISOString() })) {
+    
+    // Log interno do sistema
     await registrarNotificacao("Dose Registrada", `Você tomou ${nomeRemedio} às ${horaReal}.`);
     
+    // Dispara o Push Notification pelo OneSignal para o celular (Adicionado aqui!)
+    await enviarPushOneSignal("Dose Registrada ✅", `Você confirmou a tomada de ${nomeRemedio} às ${horaReal}.`);
+
     if(Object.keys(listaContatos).length > 0) {
         mostrarToast("Dose salva! Seus contatos foram avisados.");
     } else {
