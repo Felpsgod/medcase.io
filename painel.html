@@ -835,14 +835,12 @@ async function registrarNotificacao(titulo, mensagem) {
     carregarDados();
 }
 
-// --- NOVA FUNÇÃO: DISPARAR PUSH DIRETO VIA API REST DO ONESIGNAL ---
+// --- DISPARAR PUSH DIRETO VIA API REST DO ONESIGNAL ---
 async function enviarPushOneSignal(titulo, mensagem) {
-    // ATENÇÃO MAIKOL: COLE A SUA REST API KEY DO ONESIGNAL AQUI. 
-    // Fica no painel OneSignal > Settings > Keys & IDs
-    const REST_API_KEY = "os_v2_app_a3gll2qw4bghffqskrqpbf56iilztqgqjwmuvg5k526bu3xzx3btcerp4hettmpukkssoxlznmm6374e47b5vivkbs7b3f32khlaw7q"; 
+    const REST_API_KEY = "os_v2_app_a3gll2qw4bghffqskrqpbf56iiejy3kqqfoueueq7xxmpy3k5kicsymg6hok2yy3omh2x52n36prg6gilgbzsf3pbogs7cpvrop7aoq"; 
     const APP_ID = "06ccb5ea-16e0-4c72-9612-5460f097be42";
 
-    if(REST_API_KEY === "os_v2_app_a3gll2qw4bghffqskrqpbf56iilztqgqjwmuvg5k526bu3xzx3btcerp4hettmpukkssoxlznmm6374e47b5vivkbs7b3f32khlaw7q") {
+    if(REST_API_KEY === "os_v2_app_a3gll2qw4bghffqskrqpbf56iiejy3kqqfoueueq7xxmpy3k5kicsymg6hok2yy3omh2x52n36prg6gilgbzsf3pbogs7cpvrop7aoq") {
         console.warn("Aviso: REST API Key não configurada. O Push não será enviado ao celular.");
         return;
     }
@@ -856,7 +854,7 @@ async function enviarPushOneSignal(titulo, mensagem) {
             },
             body: JSON.stringify({
                 app_id: APP_ID,
-                included_segments: ["All"], // Envia para todos os dispositivos inscritos
+                included_segments: ["All"], 
                 headings: {"en": titulo, "pt": titulo},
                 contents: {"en": mensagem, "pt": mensagem}
             })
@@ -871,7 +869,6 @@ function pedirPermissaoNotificacao() {
     if(window.OneSignalDeferred) {
         OneSignalDeferred.push(async function(OneSignal) {
             try {
-                // Comando atualizado v16 que força a permissão nativa em PWAs iOS
                 await OneSignal.Notifications.requestPermission();
                 mostrarToast("Inscrição de notificações finalizada.");
                 registrarNotificacao("Sistema de Alertas", "Permissão para Notificações Push configurada neste dispositivo.");
@@ -1626,6 +1623,9 @@ window.salvarSlot = async function(e) {
     dadosParaSalvar.primeira_dose = null;
   }
 
+  // NOVA LINHA PARA FACILITAR O INTEGROMAT/MAKE:
+  dadosParaSalvar.horarios_calculados = getHorariosDoDia(dadosParaSalvar);
+
   if (await putData(tipo === 'maleta' ? `slots_maleta/slot_${id}` : `tags_pulseira/tag_${id}`, dadosParaSalvar)) {
     await registrarNotificacao("Medicamento Salvo", `${nomeRemedio} configurado no nicho/tag ${id}.`);
     fecharModal(); mostrarToast(`Salvo com sucesso!`); carregarDados();
@@ -1675,10 +1675,8 @@ window.salvarSintomasDose = async function(e) {
   
   if(await patchData(caminho, { tomado: true, hora_real: horaReal, sintomas: sintomas, registro_salvo_em: new Date().toISOString() })) {
     
-    // Log interno do sistema
     await registrarNotificacao("Dose Registrada", `Você tomou ${nomeRemedio} às ${horaReal}.`);
     
-    // Dispara o Push Notification pelo OneSignal para o celular (Adicionado aqui!)
     await enviarPushOneSignal("Dose Registrada ✅", `Você confirmou a tomada de ${nomeRemedio} às ${horaReal}.`);
 
     if(Object.keys(listaContatos).length > 0) {
