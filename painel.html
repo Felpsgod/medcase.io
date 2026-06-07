@@ -28,7 +28,7 @@
 </script>
 
 <script>
-    if(localStorage.getItem('medcase_auth') !== 'true') { window.location.href = 'index.html'; }
+    if(localStorage.getItem('medcase_auth') !== 'true') { window.location.href = 'login.html'; }
 </script>
 
 <style>
@@ -403,6 +403,48 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
   .contact-card { flex-direction: column; text-align: center; }
   .contact-actions { width: 100%; justify-content: center; margin-top: 10px; }
   .modal-box { padding: 24px; width: 95%; }
+
+  /* --- App nativo: respeitar notch / barras do sistema --- */
+  .sidebar { padding-top: calc(30px + env(safe-area-inset-top)); }
+  .main { padding-top: calc(10px + env(safe-area-inset-top));
+          padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+  .topbar { top: env(safe-area-inset-top); }
+
+  /* Esconde o nome no topo (pouco espaço) e mantém só o avatar */
+  .user-name-top { display: none; }
+  .user-profile { padding: 6px; }
+
+  /* Dropdowns ocupam a largura quase toda, sem vazar da tela */
+  .dropdown-menu {
+    position: fixed; top: auto; right: 12px; left: 12px;
+    min-width: 0; width: auto; max-height: 70vh;
+  }
+
+  /* Alvos de toque maiores e textos legíveis */
+  .nav-item { height: 54px; font-size: 1.15rem; }
+  .btn { padding: 14px; font-size: 0.95rem; min-width: 0; }
+  .page-heading { font-size: 1.35rem; gap: 10px; }
+
+  /* Modais coladas embaixo (estilo "bottom sheet"), mais natural no celular */
+  .modal-box {
+    width: 100%; max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    align-self: flex-end;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    max-height: 92vh;
+  }
+  .modal-overlay.open { place-items: end center; }
+}
+
+/* --- Telefones pequenos --- */
+@media (max-width: 480px) {
+  .main { padding-left: 12px; padding-right: 12px; }
+  .dash-welcome h1 { font-size: 1.35rem; }
+  .chart-line-value { font-size: 1.6rem; }
+  .watches-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .cal-days span, .cal-numbers div { font-size: 0.72rem; }
+  .page-heading { font-size: 1.2rem; }
+  .field input, .field select, .auth-field input { font-size: 16px; } /* evita zoom no iOS */
 }
 
 
@@ -1155,14 +1197,18 @@ function previewImage(event) {
   }
 }
 
-function salvarPerfil() {
+async function salvarPerfil() {
   if(savedUserAuth) {
       const user = JSON.parse(savedUserAuth);
       user.nome = document.getElementById('perfil-nome').value;
       user.telefone = document.getElementById('perfil-telefone').value;
       user.foto = currentPhotoBase64;
-      
+
       localStorage.setItem('medcase_user', JSON.stringify(user));
+
+      // Também salva no Firebase para o robô de WhatsApp ler (nome + telefone do usuário)
+      await putData('perfil', { nome: user.nome, telefone: user.telefone });
+
       loadUserProfile();
       fecharModais();
       mostrarToast('Perfil Atualizado com sucesso!');
@@ -1173,7 +1219,7 @@ function salvarPerfil() {
 function handleLogout() {
   if(confirm("Deseja sair da conta?")) {
       localStorage.removeItem('medcase_auth');
-      window.location.href = 'index.html';
+      window.location.href = 'login.html';
   }
 }
 function handlePasswordReset() { alert("Código de recuperação enviado para seu e-mail."); }
