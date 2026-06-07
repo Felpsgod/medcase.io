@@ -1526,10 +1526,20 @@ window.atualizarDashboard = function() {
       const colorClass = `tl-c${(index % 6) + 1}`; 
       
       let iconTomado = "";
-      
-      if (dataSelecionada <= new Date()) {
-        iconTomado = ev.tomado ? `<i class="fas fa-check-circle icon-taken"></i>` : `<button class="btn-tomar" onclick="abrirModalSintomas('${ev.id}', '${ev.prefix}', '${ev.nome}', '${ev.hora}')">Registrar</button>`;
+
+      // Compara a DATA + HORA exata da dose com o horário atual
+      const [evH, evM] = ev.hora.split(':').map(Number);
+      const dataHoraDose = new Date(dataSelecionada);
+      dataHoraDose.setHours(evH, evM, 0, 0);
+      const horaChegou = dataHoraDose <= new Date();
+
+      if (ev.tomado) {
+        iconTomado = `<i class="fas fa-check-circle icon-taken"></i>`;
+      } else if (horaChegou) {
+        // Hora da dose já chegou (ou está atrasada): liberar o registro
+        iconTomado = `<button class="btn-tomar" onclick="abrirModalSintomas('${ev.id}', '${ev.prefix}', '${ev.nome}', '${ev.hora}')">Registrar</button>`;
       } else {
+        // Ainda não chegou a hora
         iconTomado = `<span style="font-size:0.7rem; color:#aaa;"><i class="fas fa-calendar-day"></i> Programado</span>`;
       }
 
