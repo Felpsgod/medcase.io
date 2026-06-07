@@ -2,7 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#181818">
 <title>Acesso — MedCase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
@@ -42,6 +44,15 @@
     .switch-link { font-size: 0.9rem; color: var(--text-mid); }
     .switch-link strong { color: var(--c-green); cursor: pointer; transition: 0.2s; }
     .switch-link strong:hover { color: var(--c-dark); }
+
+    /* Mobile / app nativo */
+    body { padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)); }
+    @media (max-width: 480px) {
+        .auth-card { padding: 30px 24px; border-radius: 24px; }
+        .auth-card h2 { font-size: 1.7rem; }
+        .auth-field input { font-size: 16px; } /* evita o zoom automático do iOS */
+        .btn-auth { padding: 16px; }
+    }
 </style>
 </head>
 <body>
@@ -56,7 +67,7 @@
         <div class="auth-field"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
         
         <button class="btn-auth" onclick="handleLogin()">Acessar Painel <i class="fas fa-arrow-right"></i></button>
-        <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-soft); cursor: pointer;" onclick="alert('Enviamos um link de recuperação para seu e-mail.')">Esqueci minha senha</p>
+        <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-soft); cursor: pointer;" onclick="handleForgot()">Esqueci minha senha</p>
         
         <div class="divider"></div>
         <p class="switch-link">Não tem uma conta? <strong onclick="toggleCards('card-register')">Criar agora</strong></p>
@@ -68,6 +79,7 @@
         
         <div class="auth-field"><label>Seu Nome</label><input type="text" id="reg-name" placeholder="Ex: Maikol"></div>
         <div class="auth-field"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
+        <div class="auth-field"><label>WhatsApp (com DDD)</label><input type="tel" id="reg-phone" placeholder="(11) 99999-9999"></div>
         <div class="auth-field"><label>Senha</label><input type="password" id="reg-pass" placeholder="Crie uma senha forte"></div>
         
         <button class="btn-auth" onclick="handleRegister()">Concluir Cadastro</button>
@@ -79,46 +91,121 @@
 </div>
 
 <script>
+    // ==========================================
+    //  CONTAS NO FIREBASE (acesso de qualquer dispositivo)
+    // ==========================================
+    const FB_ROOT = "https://appatividades-7450d-default-rtdb.firebaseio.com";
+    const CONTAS_BASE = `${FB_ROOT}/contas_medcase`;
+
     if(localStorage.getItem('medcase_auth') === 'true') { window.location.href = 'painel.html'; }
+
+    // Firebase não aceita . # $ [ ] na chave -> vira underline (mesma regra do painel)
+    function emailParaId(email) {
+        return email.trim().toLowerCase().replace(/[\.\#\$\[\]]/g, '_');
+    }
 
     function toggleCards(targetId) {
         document.querySelectorAll('.auth-card').forEach(c => c.classList.remove('active'));
         document.getElementById(targetId).classList.add('active');
     }
 
-    function handleRegister() {
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const pass = document.getElementById('reg-pass').value;
-
-        if(!name || !email.includes('@') || pass.length < 4) {
-            return alert("Preencha todos os campos corretamente.");
-        }
-
-        // Cria o perfil do usuário
-        const userProfile = { nome: name, email: email, senha: pass, telefone: '', foto: '' };
+    // Guarda a sessão local e entra no painel
+    function entrar(conta) {
+        const userProfile = {
+            nome: conta.nome, email: conta.email, senha: conta.senha,
+            telefone: conta.telefone || '', foto: ''
+        };
         localStorage.setItem('medcase_user', JSON.stringify(userProfile));
         localStorage.setItem('medcase_auth', 'true');
-        
-        alert("Conta criada com sucesso! Redirecionando...");
         window.location.href = 'painel.html';
     }
 
-    function handleLogin() {
-        const email = document.getElementById('login-email').value;
-        const pass = document.getElementById('login-pass').value;
-        
-        const savedData = localStorage.getItem('medcase_user');
-        
-        if (savedData) {
-            const user = JSON.parse(savedData);
-            if(user.email === email && user.senha === pass) {
-                localStorage.setItem('medcase_auth', 'true');
-                window.location.href = 'painel.html';
+    async function handleRegister() {
+        const name  = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const pass  = document.getElementById('reg-pass').value;
+
+        if(!name || !email.includes('@') || pass.length < 4) {
+            return alert("Preencha todos os campos corretamente (senha com 4+ caracteres).");
+        }
+
+        const id = emailParaId(email);
+        try {
+            // Já existe uma conta com esse e-mail?
+            const existente = await (await fetch(`${CONTAS_BASE}/${id}.json`)).json();
+            if (existente) return alert("Já existe uma conta com este e-mail. Faça login.");
+
+            const conta = { nome: name, email: email, senha: pass, telefone: phone };
+            const r = await fetch(`${CONTAS_BASE}/${id}.json`, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(conta)
+            });
+            if(!r.ok) throw new Error('Falha ao salvar');
+
+            alert("Conta criada com sucesso! Redirecionando...");
+            entrar(conta);
+        } catch(e) {
+            alert("Erro de conexão ao criar a conta. Verifique sua internet e tente de novo.");
+        }
+    }
+
+    async function handleLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const pass  = document.getElementById('login-pass').value;
+        if(!email || !pass) return alert("Informe e-mail e senha.");
+
+        const id = emailParaId(email);
+        try {
+            const conta = await (await fetch(`${CONTAS_BASE}/${id}.json`)).json();
+            if (conta && conta.senha === pass) {
+                entrar(conta);
                 return;
             }
+        } catch(e) {
+            return alert("Erro de conexão. Verifique sua internet.");
         }
         alert("E-mail ou senha incorretos.");
+    }
+
+    // ==========================================
+    //  ESQUECI MINHA SENHA -> envia nova senha via WhatsApp (robô MedCase)
+    // ==========================================
+    async function handleForgot() {
+        const email = (prompt("Digite o e-mail da sua conta para recuperar a senha:") || "").trim();
+        if(!email) return;
+
+        const id = emailParaId(email);
+        try {
+            const conta = await (await fetch(`${CONTAS_BASE}/${id}.json`)).json();
+            if(!conta) return alert("Não encontramos nenhuma conta com este e-mail.");
+
+            // Pega o telefone da conta ou, se não tiver, do perfil salvo no painel
+            let telefone = conta.telefone;
+            if(!telefone) {
+                const perfil = await (await fetch(`${FB_ROOT}/usuarios_medcase/${id}/perfil.json`)).json();
+                telefone = perfil && perfil.telefone;
+            }
+            if(!telefone) return alert("Esta conta não tem um WhatsApp cadastrado, então não é possível enviar a nova senha. Cadastre seu telefone no perfil.");
+
+            // Gera uma senha temporária e atualiza a conta no Firebase
+            const novaSenha = Math.random().toString(36).slice(-6);
+            await fetch(`${CONTAS_BASE}/${id}.json`, {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senha: novaSenha })
+            });
+
+            // Cria um "pedido" que o robô na MagnoHost vai ler e enviar pelo WhatsApp
+            const mensagem = `🔐 *MedCase — Recuperação de senha*\n\nOlá, ${conta.nome || ''}! Sua nova senha de acesso é:\n\n*${novaSenha}*\n\nEntre com ela e, se quiser, troque depois em Perfil.`;
+            await fetch(`${FB_ROOT}/reset_whatsapp/${id}_${Date.now()}.json`, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ telefone, mensagem, criado_em: new Date().toISOString() })
+            });
+
+            alert("Pronto! Enviamos uma nova senha para o seu WhatsApp. Pode levar até 1 minuto para chegar.");
+        } catch(e) {
+            alert("Erro ao recuperar a senha. Tente novamente.");
+        }
     }
 </script>
 </body>
