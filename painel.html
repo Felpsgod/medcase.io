@@ -1415,8 +1415,8 @@ function getHorariosDoDia(data) {
     const intH = parseInt(data.intervalo);
     for(let i=0; i<freq; i++) {
       let h = hh + (i * intH);
+      if (h >= 24) break; // não volta para o início do dia: doses seguintes são no dia seguinte
       let m = mm.toString().padStart(2, '0');
-      if (h >= 24) h = h % 24; 
       horarios.push(`${h.toString().padStart(2, '0')}:${m}`);
     }
   }
