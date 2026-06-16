@@ -175,6 +175,13 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 .bar-col:nth-child(5) { height: 50%; background: var(--c-peach); } 
 .bar-col:nth-child(6) { height: 30%; background: var(--c-peach-alt1); }
 
+.health-card { border-left: 5px solid var(--c-pink-dark); }
+.health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+.health-item { display: flex; flex-direction: column; gap: 3px; background: var(--c-bg); border-radius: var(--radius-sm); padding: 12px 14px; }
+.health-item span { font-size: 0.72rem; color: var(--text-soft); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.health-item strong { font-size: 0.95rem; color: var(--text-dark); word-break: break-word; }
+@media (max-width: 480px) { .health-grid { grid-template-columns: 1fr; } }
+
 .dash-promo { background: var(--grad-1); border-radius: var(--radius-lg); padding: 30px; position: relative; overflow: hidden; min-height: 180px; box-shadow: 0 10px 20px rgba(242, 114, 197, 0.2); }
 .dash-promo h3 { font-family: 'Poppins', sans-serif; font-size: 1.4rem; color: white; max-width: 60%; line-height: 1.3; margin-bottom: 10px; z-index: 2; position: relative; }
 .dash-promo p { font-size: 0.9rem; color: rgba(255,255,255,0.9); z-index: 2; position: relative; }
@@ -494,6 +501,29 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 }
 .device-status-online { color: var(--c-green); }
 .device-status-offline { color: #888; }
+
+/* --- MARKETPLACE FARMACÊUTICOS (ESBOÇO) --- */
+.farma-filtros { display: flex; gap: 12px; margin: 16px 0 24px; flex-wrap: wrap; }
+.farma-filtros input, .farma-filtros select {
+  flex: 1; min-width: 180px; background: white; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 14px; font-family: 'Inter', sans-serif;
+  font-size: 0.9rem; outline: none; color: var(--text-dark);
+}
+.farma-filtros input:focus, .farma-filtros select:focus { border-color: var(--c-green); }
+.farma-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.farma-card { background: white; border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; transition: 0.2s; }
+.farma-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.farma-top { display: flex; align-items: center; gap: 14px; }
+.farma-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--grad-2); display: grid; place-items: center; color: white; font-weight: 700; font-size: 1.2rem; flex-shrink: 0; overflow: hidden; }
+.farma-nome { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-dark); }
+.farma-crf { font-size: 0.72rem; color: var(--text-soft); }
+.farma-esp { display: inline-block; font-size: 0.72rem; font-weight: 600; color: var(--c-green); background: rgba(4,191,138,0.1); padding: 3px 10px; border-radius: 20px; }
+.farma-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-mid); }
+.farma-meta .preco { font-weight: 700; color: var(--text-dark); }
+.farma-meta .nota { color: var(--c-orange); font-weight: 600; }
+.farma-card .btn { width: 100%; }
+
+@media (max-width: 480px) { .farma-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 
@@ -518,6 +548,9 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
       </div>
       <div class="nav-item" data-tab="tab-contatos" onclick="abrirAba('tab-contatos')">
         <i class="fas fa-user-md"></i><span>Acompanhamento</span>
+      </div>
+      <div class="nav-item" data-tab="tab-farmaceuticos" onclick="abrirAba('tab-farmaceuticos')">
+        <i class="fas fa-mortar-pestle"></i><span>Farmacêuticos</span>
       </div>
       <div class="nav-item" data-tab="tab-notificacoes" onclick="abrirAba('tab-notificacoes')">
         <i class="fas fa-bell"></i><span>Alertas</span>
@@ -608,6 +641,17 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
                 <div class="bar-col"></div><div class="bar-col"></div><div class="bar-col"></div>
               </div>
             </div>
+          </div>
+
+          <div class="dash-card health-card">
+            <div class="dash-card-title"><i class="fas fa-notes-medical" style="color: var(--c-pink-dark);"></i> Resumo de Saúde</div>
+            <div class="health-grid">
+              <div class="health-item"><span><i class="fas fa-droplet"></i> Tipo sanguíneo</span><strong id="resumo-sangue">—</strong></div>
+              <div class="health-item"><span><i class="fas fa-triangle-exclamation"></i> Alergias</span><strong id="resumo-alergias">—</strong></div>
+              <div class="health-item"><span><i class="fas fa-phone"></i> Contato de emergência</span><strong id="resumo-emergencia">—</strong></div>
+              <div class="health-item"><span><i class="fas fa-pills"></i> Medicamentos ativos</span><strong id="resumo-meds">—</strong></div>
+            </div>
+            <p style="font-size:0.72rem; color:var(--text-soft); margin-top:12px;">Edite estes dados em <strong style="cursor:pointer; color:var(--c-green);" onclick="abrirModalPerfil()">Perfil</strong>.</p>
           </div>
 
           <div class="dash-promo">
@@ -804,7 +848,52 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
 </section>
 
 
+    <section id="tab-farmaceuticos" class="page">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px; margin-bottom:8px;">
+        <div style="flex:1; min-width:240px;">
+          <h1 class="page-heading" style="margin-bottom:5px;">Farmacêuticos <span style="font-size:0.6em; background:var(--c-peach-alt2); color:#7a4b00; padding:3px 10px; border-radius:20px; vertical-align:middle;">EM BREVE</span></h1>
+          <p style="color: var(--text-mid); font-size: 0.9rem;">Tire dúvidas sobre seus medicamentos com um farmacêutico, por chamada de vídeo ou chat.</p>
+        </div>
+      </div>
+
+      <div class="farma-filtros">
+        <input type="text" id="farma-busca" placeholder="Buscar por nome ou especialidade..." oninput="renderFarmaceuticos()">
+        <select id="farma-especialidade" onchange="renderFarmaceuticos()">
+          <option value="">Todas as especialidades</option>
+          <option>Atenção ao idoso</option>
+          <option>Saúde da mulher</option>
+          <option>Diabetes & hipertensão</option>
+          <option>Pediatria</option>
+        </select>
+      </div>
+
+      <div id="farmaceuticos-grid" class="farma-grid"></div>
+
+      <div style="margin-top:24px; background:rgba(4,191,138,0.06); border:1px dashed var(--c-green); border-radius:var(--radius-lg); padding:20px; text-align:center;">
+        <p style="color:var(--text-mid); font-size:0.9rem;"><i class="fas fa-circle-info" style="color:var(--c-green);"></i> Esta é uma <strong>prévia (esboço)</strong> do módulo de consultas. Os profissionais abaixo são exemplos. Quando ativarmos, dá para agendar, pagar e atender por aqui.</p>
+      </div>
+    </section>
+
+
   </main>
+</div>
+
+<div id="modal-farma" class="modal-overlay">
+  <div class="modal-box" style="max-width: 420px;">
+    <div class="modal-heading">
+      <div class="modal-icon-wrap"><i class="fas fa-calendar-check"></i></div>
+      <div><div class="modal-title">Agendar consulta</div><div class="modal-subtitle" id="farma-modal-nome">Farmacêutico</div></div>
+    </div>
+    <div class="field"><label>Data preferida</label><input type="date" id="farma-data"></div>
+    <div class="field"><label>Período</label>
+      <select id="farma-periodo"><option>Manhã</option><option>Tarde</option><option>Noite</option></select>
+    </div>
+    <div class="field"><label>Sobre o que deseja falar?</label><textarea id="farma-motivo" rows="3" placeholder="Ex: dúvidas de interação entre meus remédios"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModais()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarAgendamentoFarma()"><i class="fas fa-paper-plane"></i> Solicitar</button>
+    </div>
+  </div>
 </div>
 
 <div id="modal-contato" class="modal-overlay">
@@ -844,7 +933,25 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
       <div class="field"><label>NOME COMPLETO</label><input type="text" id="perfil-nome" placeholder="Seu nome"></div>
       <div class="field"><label>E-MAIL PESSOAL</label><input type="email" id="perfil-email" disabled></div>
       <div class="field"><label>TELEFONE PESSOAL</label><input type="text" id="perfil-telefone" placeholder="(00) 00000-0000"></div>
-      
+
+      <div class="row-2">
+        <div class="field"><label>Tipo Sanguíneo</label>
+          <select id="perfil-sangue">
+            <option value="">--</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>AB+</option><option>AB-</option>
+            <option>O+</option><option>O-</option>
+          </select>
+        </div>
+        <div class="field"><label>Alergias</label><input type="text" id="perfil-alergias" placeholder="Ex: Dipirona, Penicilina"></div>
+      </div>
+
+      <div class="row-2">
+        <div class="field"><label>Emergência — Nome</label><input type="text" id="perfil-emergencia-nome" placeholder="Ex: Maria (filha)"></div>
+        <div class="field"><label>Emergência — WhatsApp</label><input type="text" id="perfil-emergencia-tel" placeholder="(00) 00000-0000"></div>
+      </div>
+
       <div class="modal-footer">
           <button class="btn btn-ghost" onclick="fecharModais()">Cancelar</button>
           <button class="btn btn-primary" onclick="salvarPerfil()"><i class="fas fa-save"></i> Salvar Perfil</button>
@@ -883,8 +990,30 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--c
       <input type="hidden" id="slot-tipo-hidden">
       
       <div class="field"><label>Nome do Medicamento</label><input type="text" id="slot-nome" placeholder="Ex: Paracetamol 750mg" required></div>
-      
-      <div class="field"><label>Até quando tomar? (Data Limite)</label><input type="date" id="slot-data-limite" placeholder="Opcional"></div>
+
+      <div class="row-2">
+        <div class="field"><label>Dose por tomada</label><input type="number" id="slot-dose-qtd" placeholder="Ex: 1" min="0" step="any"></div>
+        <div class="field"><label>Unidade</label>
+          <select id="slot-dose-unidade">
+            <option value="comprimido(s)">Comprimido(s)</option>
+            <option value="cápsula(s)">Cápsula(s)</option>
+            <option value="mg">mg</option>
+            <option value="ml">ml</option>
+            <option value="colher(es) de chá">Colher(es) de chá</option>
+            <option value="colher(es) de sopa">Colher(es) de sopa</option>
+            <option value="gota(s)">Gota(s)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom: 10px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none;">
+          <input type="checkbox" id="slot-uso-continuo" onchange="toggleUsoContinuo()" style="width:auto; margin:0;">
+          Uso contínuo (sem data final)
+        </label>
+      </div>
+
+      <div class="field" id="field-data-limite"><label>Até quando tomar? (Data Limite)</label><input type="date" id="slot-data-limite" placeholder="Opcional"></div>
 
       <div class="posology-toggle">
         <div class="pos-btn active" id="btn-fixo" onclick="setPosologyType('fixo')">Intervalo Fixo</div>
@@ -1044,6 +1173,35 @@ async function carregarDados() {
   atualizarDashboard();
   renderizarContatos();
   renderizarNotificacoes();
+  atualizarResumoSaude();
+}
+
+// Preenche o card "Resumo de Saúde" do dashboard
+function atualizarResumoSaude() {
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem('medcase_user') || '{}'); } catch(e) {}
+
+  safeSetText('resumo-sangue', user.tipo_sanguineo || '—');
+  safeSetText('resumo-alergias', user.alergias || 'Nenhuma informada');
+  const emerg = user.emergencia_nome
+    ? `${user.emergencia_nome}${user.emergencia_telefone ? ' • ' + user.emergencia_telefone : ''}`
+    : '—';
+  safeSetText('resumo-emergencia', emerg);
+
+  // Medicamentos ativos (não expirados)
+  const hojeIso = new Date().toISOString().split('T')[0];
+  const nomes = [];
+  const coletar = (ds) => {
+    for (let k in ds) {
+      const m = ds[k];
+      if (m && m.nome) {
+        const expirado = m.data_limite && hojeIso > m.data_limite;
+        if (!expirado) nomes.push(m.nome);
+      }
+    }
+  };
+  coletar(maletaSlots); coletar(pulseiraTags);
+  safeSetText('resumo-meds', nomes.length ? nomes.join(', ') : 'Nenhum');
 }
 
 // --- FUNÇÃO PARA FORMATAR HORA AM/PM COM ÍCONES ---
@@ -1063,6 +1221,12 @@ function formatarHoraAMPM(hora24) {
 function preencherHoraAgora(id) {
     const agora = new Date();
     document.getElementById(id).value = agora.toTimeString().slice(0, 5);
+}
+
+// Formata a dose: "1 colher(es) de chá", "2 comprimido(s)", "500 mg"...
+function formatarDose(med) {
+  if (!med || !med.dose_qtd) return '';
+  return `${med.dose_qtd} ${med.dose_unidade || ''}`.trim();
 }
 
 // --- NOTIFICAÇÕES (SISTEMA INTERNO FIREBASE) ---
@@ -1172,7 +1336,11 @@ function abrirModalPerfil() {
       const user = JSON.parse(savedUserAuth);
       document.getElementById('perfil-nome').value = user.nome || '';
       document.getElementById('perfil-telefone').value = user.telefone || '';
-      
+      document.getElementById('perfil-sangue').value = user.tipo_sanguineo || '';
+      document.getElementById('perfil-alergias').value = user.alergias || '';
+      document.getElementById('perfil-emergencia-nome').value = user.emergencia_nome || '';
+      document.getElementById('perfil-emergencia-tel').value = user.emergencia_telefone || '';
+
       if(user.foto && user.foto !== '') {
           document.getElementById('modal-avatar-preview').src = user.foto;
           document.getElementById('modal-avatar-preview').style.display = 'block';
@@ -1207,14 +1375,23 @@ async function salvarPerfil() {
       const user = JSON.parse(savedUserAuth);
       user.nome = document.getElementById('perfil-nome').value;
       user.telefone = document.getElementById('perfil-telefone').value;
+      user.tipo_sanguineo = document.getElementById('perfil-sangue').value;
+      user.alergias = document.getElementById('perfil-alergias').value;
+      user.emergencia_nome = document.getElementById('perfil-emergencia-nome').value;
+      user.emergencia_telefone = document.getElementById('perfil-emergencia-tel').value;
       user.foto = currentPhotoBase64;
 
       localStorage.setItem('medcase_user', JSON.stringify(user));
 
-      // Também salva no Firebase para o robô de WhatsApp ler (nome + telefone do usuário)
-      await putData('perfil', { nome: user.nome, telefone: user.telefone });
+      // Também salva no Firebase para o robô de WhatsApp ler (nome + telefone + dados de saúde)
+      await putData('perfil', {
+        nome: user.nome, telefone: user.telefone,
+        tipo_sanguineo: user.tipo_sanguineo, alergias: user.alergias,
+        emergencia_nome: user.emergencia_nome, emergencia_telefone: user.emergencia_telefone
+      });
 
       loadUserProfile();
+      atualizarResumoSaude();
       fecharModais();
       mostrarToast('Perfil Atualizado com sucesso!');
       registrarNotificacao("Perfil", "Os dados do seu perfil foram atualizados.");
@@ -1323,10 +1500,11 @@ window.mudarSemana = function(direcao) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  loadUserProfile(); 
-  renderCalendar(); 
+  loadUserProfile();
+  renderCalendar();
   carregarDados();
-  setInterval(carregarDados, 3000); 
+  renderFarmaceuticos();
+  setInterval(carregarDados, 3000);
 
   document.getElementById('form-slot').addEventListener('submit', salvarSlot);
   document.getElementById('btn-limpar-slot').addEventListener('click', limparSlot);
@@ -1500,7 +1678,7 @@ window.atualizarDashboard = function() {
 
           if(foiTomado) totalTomadas++;
           
-          linhaTempo.push({ hora: h, nome: med.nome, tomado: foiTomado, sintomas: sintomasRelatados, source: source, id: idNum, prefix: sourceIdPrefix });
+          linhaTempo.push({ hora: h, nome: med.nome, dose: formatarDose(med), tomado: foiTomado, sintomas: sintomasRelatados, source: source, id: idNum, prefix: sourceIdPrefix });
         });
       }
     }
@@ -1551,7 +1729,7 @@ window.atualizarDashboard = function() {
           <div class="event-card ${colorClass} ${statusClass}">
             <div class="event-info">
               <h4>${ev.nome}</h4>
-              <p><i class="fas ${ev.prefix === 'maleta' ? 'fa-medkit' : 'fa-tag'}"></i> ${ev.source}</p>
+              <p><i class="fas ${ev.prefix === 'maleta' ? 'fa-medkit' : 'fa-tag'}"></i> ${ev.source}${ev.dose ? ` • ${ev.dose}` : ''}</p>
               ${avisoSintoma}
             </div>
             <div>${iconTomado}</div>
@@ -1622,7 +1800,8 @@ function renderMaleta() {
           <div class="slot-details">
             <div style="display:flex; gap:4px; flex-wrap:wrap;">
               <span class="slot-pill"><i class="fas fa-redo"></i> ${data.frequencia}x</span>
-              <span class="slot-pill"><i class="fas fa-clock"></i> ${data.tipo_posologia === 'custom' ? 'Manual' : 'Fixo'}</span>
+              ${formatarDose(data) ? `<span class="slot-pill"><i class="fas fa-prescription-bottle-medical"></i> ${formatarDose(data)}</span>` : ''}
+              ${data.uso_continuo ? '<span class="slot-pill"><i class="fas fa-infinity"></i> Contínuo</span>' : ''}
               ${tagExpirado}
             </div>
             ${htmlHorariosFlex}
@@ -1675,7 +1854,7 @@ function renderPulseiras() {
             <div class="w-med-name" title="${data.nome}">${data.nome}</div>
             <div class="w-timer-box">${horariosLista}</div>
           </div>
-          <div class="w-pills" style="z-index:2; flex-wrap:wrap; margin-top:8px;"><span class="w-pill"><i class="fas fa-redo"></i> ${data.frequencia}x</span>${p2}${tagExp}</div>
+          <div class="w-pills" style="z-index:2; flex-wrap:wrap; margin-top:8px;"><span class="w-pill"><i class="fas fa-redo"></i> ${data.frequencia}x</span>${formatarDose(data) ? `<span class="w-pill"><i class="fas fa-prescription-bottle-medical"></i> ${formatarDose(data)}</span>` : ''}${p2}${tagExp}</div>
         </div>
         <div class="watch-strap bottom bg-${colorClass}"></div>`;
       card.addEventListener('click', () => abrirModal(i, true, 'pulseira'));
@@ -1767,9 +1946,13 @@ window.abrirModal = function (id, isEdit, tipo) {
 
   if (isEdit && data) {
     document.getElementById('slot-nome').value = data.nome || '';
+    document.getElementById('slot-dose-qtd').value = data.dose_qtd || '';
+    document.getElementById('slot-dose-unidade').value = data.dose_unidade || 'comprimido(s)';
+    document.getElementById('slot-uso-continuo').checked = !!data.uso_continuo;
     document.getElementById('slot-data-limite').value = data.data_limite || '';
+    toggleUsoContinuo();
     document.getElementById('btn-limpar-slot').style.display = 'flex';
-    
+
     setPosologyType(data.tipo_posologia || 'fixo');
     if (data.tipo_posologia === 'fixo' || !data.tipo_posologia) {
       document.getElementById('slot-intervalo').value = data.intervalo || '';
@@ -1784,10 +1967,20 @@ window.abrirModal = function (id, isEdit, tipo) {
     document.getElementById('form-slot').reset();
     setPosologyType('fixo');
     document.getElementById('custom-times-list').innerHTML = '';
+    document.getElementById('slot-uso-continuo').checked = false;
+    toggleUsoContinuo();
     document.getElementById('btn-limpar-slot').style.display = 'none';
   }
   document.getElementById('slot-modal').classList.add('open');
 };
+window.toggleUsoContinuo = function() {
+  const cont = document.getElementById('slot-uso-continuo').checked;
+  const campo = document.getElementById('field-data-limite');
+  const input = document.getElementById('slot-data-limite');
+  campo.style.display = cont ? 'none' : 'block';
+  if (cont) input.value = '';
+}
+
 function fecharModal () { document.getElementById('slot-modal').classList.remove('open'); }
 function fecharModais () { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open')); }
 window.abrirModalGenerico = function (id) { fecharModais(); document.getElementById(id).classList.add('open'); }
@@ -1799,10 +1992,15 @@ window.salvarSlot = async function(e) {
   const dataAtual = (tipo === 'maleta' ? maletaSlots : pulseiraTags)[`${tipo === 'maleta' ? 'slot' : 'tag'}_${id}`];
   const nomeRemedio = document.getElementById('slot-nome').value;
   
+  const usoContinuo = document.getElementById('slot-uso-continuo').checked;
+
   const dadosParaSalvar = {
     nome: nomeRemedio,
-    data_limite: document.getElementById('slot-data-limite').value,
-    historico_tomadas: dataAtual?.historico_tomadas || {}, 
+    dose_qtd: document.getElementById('slot-dose-qtd').value,
+    dose_unidade: document.getElementById('slot-dose-unidade').value,
+    uso_continuo: usoContinuo,
+    data_limite: usoContinuo ? '' : document.getElementById('slot-data-limite').value,
+    historico_tomadas: dataAtual?.historico_tomadas || {},
     tipo_posologia: currentPosologyType
   };
 
@@ -1901,6 +2099,64 @@ function mostrarToast (msg) {
   document.getElementById('toast-msg').textContent = msg;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ==========================================
+// MARKETPLACE DE FARMACÊUTICOS (ESBOÇO / MOCK)
+// ==========================================
+// Dados de exemplo — depois isso virá do Firebase / cadastro de profissionais.
+const FARMACEUTICOS_MOCK = [
+  { nome: "Dra. Ana Beatriz", crf: "CRF-SP 123456", esp: "Atenção ao idoso", preco: "R$ 49", nota: "4.9", iniciais: "AB" },
+  { nome: "Dr. Carlos Mendes", crf: "CRF-RJ 098765", esp: "Diabetes & hipertensão", preco: "R$ 59", nota: "4.8", iniciais: "CM" },
+  { nome: "Dra. Júlia Faria", crf: "CRF-MG 045678", esp: "Saúde da mulher", preco: "R$ 55", nota: "5.0", iniciais: "JF" },
+  { nome: "Dr. Rafael Lima", crf: "CRF-SP 567890", esp: "Pediatria", preco: "R$ 49", nota: "4.7", iniciais: "RL" },
+  { nome: "Dra. Marina Souza", crf: "CRF-PR 011223", esp: "Atenção ao idoso", preco: "R$ 45", nota: "4.9", iniciais: "MS" },
+  { nome: "Dr. Pedro Alves", crf: "CRF-BA 334455", esp: "Diabetes & hipertensão", preco: "R$ 60", nota: "4.6", iniciais: "PA" },
+];
+
+window.renderFarmaceuticos = function() {
+  const grid = document.getElementById('farmaceuticos-grid');
+  if (!grid) return;
+  const busca = (document.getElementById('farma-busca')?.value || '').toLowerCase();
+  const esp = document.getElementById('farma-especialidade')?.value || '';
+
+  const lista = FARMACEUTICOS_MOCK.filter(f =>
+    (!esp || f.esp === esp) &&
+    (!busca || f.nome.toLowerCase().includes(busca) || f.esp.toLowerCase().includes(busca))
+  );
+
+  if (lista.length === 0) {
+    grid.innerHTML = '<p style="color:var(--text-soft); grid-column:1/-1;">Nenhum farmacêutico encontrado com esses filtros.</p>';
+    return;
+  }
+
+  grid.innerHTML = lista.map(f => `
+    <div class="farma-card">
+      <div class="farma-top">
+        <div class="farma-avatar">${f.iniciais}</div>
+        <div>
+          <div class="farma-nome">${f.nome}</div>
+          <div class="farma-crf">${f.crf}</div>
+        </div>
+      </div>
+      <span class="farma-esp">${f.esp}</span>
+      <div class="farma-meta">
+        <span class="preco">${f.preco} <span style="font-weight:400; color:var(--text-soft);">/ consulta</span></span>
+        <span class="nota"><i class="fas fa-star"></i> ${f.nota}</span>
+      </div>
+      <button class="btn btn-primary" onclick="agendarFarmaceutico('${f.nome.replace(/'/g, "")}')"><i class="fas fa-calendar-plus"></i> Agendar consulta</button>
+    </div>
+  `).join('');
+}
+
+window.agendarFarmaceutico = function(nome) {
+  document.getElementById('farma-modal-nome').textContent = nome;
+  abrirModalGenerico('modal-farma');
+}
+
+window.confirmarAgendamentoFarma = function() {
+  fecharModais();
+  mostrarToast('Solicitação enviada! (prévia — em breve disponível)');
 }
 
 
