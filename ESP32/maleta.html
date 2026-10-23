@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedCase - Simulador ESP32</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  header h1 {
+    font-size: 24px;
+    color: #38bdf8;
+    letter-spacing: 1px;
+  }
+  header p {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 1100px;
+    width: 100%;
+  }
+  @media (max-width: 800px) {
+    .container { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .card h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 8px;
+  }
+
+  /* ===== MALETA ===== */
+  .maleta {
+    background: linear-gradient(145deg, #1e3a5f, #0f2238);
+    border: 3px solid #334155;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+  }
+  .maleta::before {
+    content: "MEDCASE";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #475569;
+  }
+  .slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .slot {
+    background: #0f172a;
+    border: 2px solid #334155;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+  }
+  .slot.alerta {
+    border-color: #ef4444;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    animation: pulse-alerta 1s infinite;
+  }
+  @keyframes pulse-alerta {
+    0%, 100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9); }
+  }
+  .slot .label {
+    font-size: 10px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .led {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1e293b;
+    border: 2px solid #0f172a;
+    box-shadow: inset 0 0 8px #000;
+    transition: all 0.2s;
+  }
+  .led.on {
+    background: #ef4444;
+    box-shadow: 0 0 20px #ef4444, inset 0 0 10px #fca5a5;
+  }
+  .led.status {
+    width: 12px;
+    height: 12px;
+    background: #334155;
+  }
+  .led.status.on {
+    background: #22c55e;
+    box-shadow: 0 0 10px #22c55e;
+  }
+
+  /* ===== BOTÃO ===== */
+  .botao-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0;
+  }
+  .botao-fisico {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f87171, #991b1b);
+    border: 4px solid #450a0a;
+    box-shadow: 0 6px 0 #450a0a, 0 8px 15px rgba(0,0,0,0.5);
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.1s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .botao-fisico:active, .botao-fisico.pressed {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #450a0a, 0 4px 8px rgba(0,0,0,0.5);
+  }
+  .botao-fisico:disabled {
+    filter: grayscale(0.7);
+    cursor: not-allowed;
+  }
+  .botao-hint {
+    font-size: 11px;
+    color: #64748b;
+    text-align: center;
+  }
+
+  /* ===== CONTROLES ===== */
+  .btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: #2563eb; }
+  .btn.danger { background: #ef4444; }
+  .btn.danger:hover { background: #dc2626; }
+  .btn.success { background: #22c55e; }
+  .btn.success:hover { background: #16a34a; }
+  .btn.gray { background: #475569; }
+  .btn.gray:hover { background: #64748b; }
+  .btn:disabled {
+    background: #334155;
+    color: #64748b;
+    cursor: not-allowed;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .field label {
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .field input {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+
+  .row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .row.between { justify-content: space-between; }
+
+  /* ===== STATUS ===== */
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .status-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 8px;
+    background: #0f172a;
+    border-radius: 6px;
+  }
+  .status-item .k { color: #64748b; }
+  .status-item .v { color: #e2e8f0; font-family: monospace; }
+  .status-item .v.ok { color: #22c55e; }
+  .status-item .v.bad { color: #ef4444; }
+
+  /* ===== LOG ===== */
+  .log {
+    background: #000;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px;
+    height: 280px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #cbd5e1;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .log::-webkit-scrollbar { width: 8px; }
+  .log::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .log .ts { color: #64748b; }
+  .log .ok { color: #22c55e; }
+  .log .err { color: #ef4444; }
+  .log .warn { color: #f59e0b; }
+  .log .info { color: #38bdf8; }
+  .log .alert { color: #f472b6; font-weight: bold; }
+
+  /* ===== ALERTA GLOBAL ===== */
+  .alerta-banner {
+    display: none;
+    background: #ef4444;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 12px;
+    animation: blink 1s infinite;
+  }
+  .alerta-banner.active { display: block; }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  .alerta-banner small {
+    display: block;
+    font-weight: normal;
+    font-size: 11px;
+    margin-top: 4px;
+    opacity: 0.9;
+  }
+
+  .comandos {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .comandos button {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .footer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #475569;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🩺 MEDCASE — Simulador ESP32</h1>
+  <p>Firmware v2.0 (backend Flask) · rodando no navegador</p>
+</header>
+
+<div class="container">
+
+  <!-- ================= COLUNA ESQUERDA ================= -->
+  <div>
+    <div class="alerta-banner" id="alertaBanner">
+      ⚠️ HORA DO MEDICAMENTO!
+      <small id="alertaDetalhe"></small>
+    </div>
+
+    <div class="card">
+      <h2>💼 Maleta</h2>
+      <div class="maleta">
+        <div class="slots" id="slots">
+          <!-- 6 slots gerados por JS -->
+        </div>
+      </div>
+
+      <div class="botao-area">
+        <button class="botao-fisico" id="botaoFisico" disabled>BOTÃO</button>
+        <div class="botao-hint">
+          Clique curto: confirmar dose (se houver alerta)<br>
+          Segure 5s: abrir "portal" de configuração
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <h2>📟 Comandos (equivalente ao Monitor Serial)</h2>
+      <div class="comandos">
+        <button class="btn gray" id="cmdQ" disabled>Q Confirmar</button>
+        <button class="btn gray" id="cmdS" disabled>S Verificar</button>
+        <button class="btn gray" id="cmdW" disabled>W Wi-Fi</button>
+        <button class="btn gray" id="cmdH" disabled>H Hora</button>
+        <button class="btn gray" id="cmdI" disabled>I Info</button>
+        <button class="btn danger" id="cmdR" disabled>R Resetar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= COLUNA DIREITA ================= -->
+  <div>
+    <div class="card">
+      <h2>⚙️ Configuração (equivalent ao portal MEDCASE-SETUP)</h2>
+      <div class="field">
+        <label>Servidor MedCase (URL do backend)</label>
+        <input type="text" id="inputServidor" placeholder="http://192.168.0.47:5000" />
+      </div>
+      <div class="field">
+        <label>ID do dispositivo</label>
+        <div class="row">
+          <input type="text" id="inputId" placeholder="MC-A1B2C3" style="flex:1;" />
+          <button class="btn gray" id="btnGerarId">🎲 Gerar</button>
+        </div>
+      </div>
+      <div class="row between">
+        <button class="btn success" id="btnIniciar">▶ Iniciar</button>
+        <button class="btn danger" id="btnParar" disabled>⏹ Parar</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <h2>📊 Status</h2>
+      <div class="status-grid">
+        <div class="status-item"><span class="k">Wi-Fi</span><span class="v" id="stWifi">—</span></div>
+        <div class="status-item"><span class="k">Servidor</span><span class="v" id="stServidor">—</span></div>
+        <div class="status-item"><span class="k">Vinculado</span><span class="v" id="stVinculado">—</span></div>
+        <div class="status-item"><span class="k">Hora</span><span class="v" id="stHora">—</span></div>
+        <div class="status-item"><span class="k">Próx. check</span><span class="v" id="stProxCheck">—</span></div>
+        <div class="status-item"><span class="k">Próx. status</span><span class="v" id="stProxStatus">—</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <h2>📝 Log (Monitor Serial)</h2>
+      <div class="log" id="log"></div>
+      <div class="row" style="margin-top: 8px;">
+        <button class="btn gray" id="btnLimparLog">🗑 Limpar Log</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Simulador fiel ao firmware v2.0 · As rotas usadas são as mesmas do backend Flask
+</div>
+
+<script>
+// ============================================================
+//  MEDCASE - Simulador ESP32 (v2.0)
+//  Réplica em JS do firmware. As rotas são exatamente as mesmas:
+//    GET  /api/dispositivo/<id>/agenda?data=YYYY-MM-DD
+//    POST /api/dispositivo/<id>/tomadas
+//    PUT  /api/dispositivo/<id>/status
+//    POST /api/dispositivo/<id>/logs
+// ============================================================
+
+// ---------- CONFIGURAÇÕES (iguais ao firmware) ----------
+const FIRMWARE_VERSAO = "2.0";
+const SERVIDOR_PADRAO = "http://192.168.0.47:5000";
+const NOME_DISPOSITIVO = "Maleta MedCase";
+
+const CHECK_INTERVAL_MS = 30000;    // 30s
+const STATUS_INTERVAL_MS = 120000;  // 2min
+const TEMPO_PORTAL_BOTAO_MS = 5000; // 5s
+const JANELA_MINUTOS = 5;
+const HTTP_TIMEOUT_MS = 10000;
+const DEBOUNCE_MS = 50;
+
+// ---------- ESTADO GLOBAL ----------
+const state = {
+  rodando: false,
+  servidorUrl: SERVIDOR_PADRAO,
+  espId: "",
+  vinculado: false,
+  // Alerta atual
+  alertaAtivo: false,
+  medicamentoAtual: "",
+  dispositivoAtual: "",
+  posicaoAtual: 0,
+  horaProgramadaAtual: "",
+  dataAlertaAtual: "",
+  // Timers
+  lastCheck: 0,
+  lastStatus: 0,
+  checkTimer: null,
+  statusTimer: null,
+  clockTimer: null,
+  // Botão
+  botaoPressionadoEm: 0,
+  pressaoLongaTratada: false,
+  botaoHoldTimer: null,
+};
+
+// ---------- DOM ----------
+const $ = (id) => document.getElementById(id);
+const slotsEl = $("slots");
+const logEl = $("log");
+const alertaBanner = $("alertaBanner");
+const alertaDetalhe = $("alertaDetalhe");
+const botaoFisico = $("botaoFisico");
+
+// ---------- LEDS (6 slots, igual GPIO 2 de cada nicho) ----------
+const leds = [];
+for (let i = 1; i <= 6; i++) {
+  const slot = document.createElement("div");
+  slot.className = "slot";
+  slot.id = "slot_" + i;
+  slot.innerHTML = `
+    <div class="label">Nicho ${i}</div>
+    <div class="led" id="led_${i}"></div>
+  `;
+  slotsEl.appendChild(slot);
+  leds[i] = slot.querySelector(".led");
+}
+
+// ============================================================
+// LOG (equivalente ao Serial.println)
+// ============================================================
+function log(msg, cls = "") {
+  const now = new Date();
+  const ts = now.toLocaleTimeString("pt-BR");
+  const line = document.createElement("div");
+  line.innerHTML = `<span class="ts">[${ts}]</span> <span class="${cls}">${escapeHtml(msg)}</span>`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+// ============================================================
+// HORA (NTP simulado com fuso GMT-3)
+// ============================================================
+function agoraBrasilia() {
+  // Retorna um objeto Date "deslocado" para que getHours() etc. retornem
+  // a hora de Brasília (GMT-3), independente do fuso do navegador.
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs - 3 * 3600000);
+}
+function dataHoje(t = agoraBrasilia()) {
+  const y = t.getFullYear();
+  const m = String(t.getMonth() + 1).padStart(2, "0");
+  const d = String(t.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+function horaAgora(t = agoraBrasilia()) {
+  return String(t.getHours()).padStart(2, "0") + ":" + String(t.getMinutes()).padStart(2, "0");
+}
+function mostrarHoraAtual() {
+  const t = agoraBrasilia();
+  const s = `${String(t.getDate()).padStart(2,"0")}/${String(t.getMonth()+1).padStart(2,"0")}/${t.getFullYear()} ${horaAgora(t)}:${String(t.getSeconds()).padStart(2,"0")}`;
+  log("Hora atual: " + s);
+}
+function timestampISO() {
+  const t = agoraBrasilia();
+  const y = t.getFullYear();
+  const mo = String(t.getMonth() + 1).padStart(2, "0");
+  const d = String(t.getDate()).padStart(2, "0");
+  const h = String(t.getHours()).padStart(2, "0");
+  const mi = String(t.getMinutes()).padStart(2, "0");
+  const se = String(t.getSeconds()).padStart(2, "0");
+  return `${y}-${mo}-${d}T${h}:${mi}:${se}-03:00`;
+}
+
+// ============================================================
+// HTTP (mesma lógica de requisicao() do firmware)
+// ============================================================
+async function requisicao(metodo, caminho, corpo = null) {
+  const url = state.servidorUrl + "/api" + caminho;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), HTTP_TIMEOUT_MS);
+
+  const opts = {
+    method: metodo,
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
+    signal: controller.signal,
+  };
+  if (corpo !== null) opts.body = corpo;
+
+  try {
+    const resp = await fetch(url, opts);
+    clearTimeout(timeoutId);
+    const text = await resp.text();
+    return { code: resp.status, body: text };
+  } catch (err) {
+    clearTimeout(timeoutId);
+    log(`Erro na requisicao (${url}): ${err.message}`, "err");
+    return { code: -1, body: "" };
+  }
+}
+
+// PUT /api/dispositivo/<id>/status
+async function enviarStatus() {
+  const corpo = JSON.stringify({ status: "online", nome: NOME_DISPOSITIVO });
+  const { code, body } = await requisicao("PUT", `/dispositivo/${state.espId}/status`, corpo);
+  if (code === 200) {
+    if (!state.vinculado) log("✓ Dispositivo online no servidor", "ok");
+    state.vinculado = true;
+    return true;
+  }
+  if (code === 404) {
+    state.vinculado = false;
+    log(`Dispositivo ainda nao vinculado. No app: Integracao ESP32 -> ID ${state.espId}`, "warn");
+  } else if (code > 0) {
+    log(`Status retornou HTTP ${code}`, "err");
+  }
+  return false;
+}
+
+// POST /api/dispositivo/<id>/logs
+async function registrarLog(tipo, mensagem) {
+  const doc = { tipo, mensagem, timestamp: timestampISO() };
+  await requisicao("POST", `/dispositivo/${state.espId}/logs`, JSON.stringify(doc));
+}
+
+// ============================================================
+// MEDICAMENTOS (mesma lógica de verificarMedicamentos())
+// ============================================================
+async function verificarMedicamentos() {
+  if (!state.rodando) return;
+
+  const t = agoraBrasilia();
+  const data = state.alertaAtivo ? state.dataAlertaAtual : dataHoje(t);
+  const minutosAtuais = t.getHours() * 60 + t.getMinutes();
+
+  if (!state.alertaAtivo) log("\n[Verificando medicamentos...]", "info");
+
+  const { code, body } = await requisicao("GET", `/dispositivo/${state.espId}/agenda?data=${data}`);
+
+  if (code === 404) {
+    state.vinculado = false;
+    log("Dispositivo nao vinculado a nenhuma conta.", "warn");
+    log(`No app, va em Integracao ESP32 e digite o ID: ${state.espId}`, "warn");
+    piscarLED(1, 600, 0);
+    return;
+  }
+  if (code !== 200) {
+    log(`Nao foi possivel buscar a agenda no servidor (${state.servidorUrl}). HTTP ${code}`, "err");
+    return;
+  }
+  state.vinculado = true;
+
+  let doc;
+  try {
+    doc = JSON.parse(body);
+  } catch (e) {
+    log("Resposta invalida do servidor: " + e.message, "err");
+    return;
+  }
+
+  const medicamentos = doc.medicamentos || [];
+
+  // ---- Alerta ativo: só confere se a dose já foi registrada pelo app ----
+  if (state.alertaAtivo) {
+    for (const med of medicamentos) {
+      if ((med.dispositivo || "") !== state.dispositivoAtual) continue;
+      if ((med.posicao || 0) !== state.posicaoAtual) continue;
+      for (const h of (med.horarios || [])) {
+        if (h.hora === state.horaProgramadaAtual && h.tomado === true) {
+          log(`Dose de ${state.medicamentoAtual} ja foi registrada pelo app. Alerta encerrado.`, "ok");
+          limparAlerta();
+          return;
+        }
+      }
+    }
+    log("[Alerta ja ativo. Pressione o botao para confirmar]", "warn");
+    return;
+  }
+
+  // ---- Procura dose pendente dentro da janela ----
+  for (const med of medicamentos) {
+    for (const h of (med.horarios || [])) {
+      if (h.tomado) continue;
+      if (dentroDaJanela(h.hora, minutosAtuais)) {
+        dispararAlerta(
+          med.dispositivo || "maleta",
+          med.posicao || 0,
+          med.nome || "",
+          med.dose || "",
+          h.hora,
+          data
+        );
+        return;
+      }
+    }
+  }
+
+  mostrarHoraAtual();
+  log("Nenhum medicamento pendente para este horario.");
+}
+
+function dentroDaJanela(hora, minutosAtuais) {
+  if (!hora || hora.length < 5) return false;
+  const minutosDose = parseInt(hora.substring(0, 2), 10) * 60 + parseInt(hora.substring(3, 5), 10);
+  return Math.abs(minutosDose - minutosAtuais) <= JANELA_MINUTOS;
+}
+
+function dispararAlerta(dispositivo, posicao, nome, dose, hora, data) {
+  const local = (dispositivo === "maleta" ? "Nicho " : "Tag ") + posicao;
+
+  log("\n########################################", "alert");
+  log("#  ALERTA DE MEDICAMENTO!             #", "alert");
+  log("#  ALERTA DE MEDICAMENTO!             #", "alert");
+  log("########################################", "alert");
+  log("Dispositivo: " + dispositivo + " - " + local, "alert");
+  log("Medicamento: " + nome, "alert");
+  if (dose) log("Dose: " + dose, "alert");
+  log("Horario: " + hora, "alert");
+  log("\n>>> CLIQUE NO BOTAO OU PRESSIONE Q PARA CONFIRMAR <<<", "alert");
+  log("########################################\n", "alert");
+
+  state.alertaAtivo = true;
+  state.medicamentoAtual = nome;
+  state.dispositivoAtual = dispositivo;
+  state.posicaoAtual = posicao;
+  state.horaProgramadaAtual = hora;
+  state.dataAlertaAtual = data;
+
+  // LED do slot correspondente + banner
+  if (dispositivo === "maleta" && leds[posicao]) {
+    leds[posicao].classList.add("on");
+    document.getElementById("slot_" + posicao)?.classList.add("alerta");
+  }
+  alertaBanner.classList.add("active");
+  alertaDetalhe.textContent = `${nome} · ${hora} · ${local}`;
+
+  registrarLog("ALERTA", `Hora de tomar ${nome} (${hora}) - ${local}`);
+}
+
+// ============================================================
+// CONFIRMAR (POST /tomadas)
+// ============================================================
+async function confirmarMedicamentoTomado() {
+  if (!state.alertaAtivo) {
+    log("Nenhum alerta ativo para confirmar.");
+    return;
+  }
+
+  log("\nConfirmando que tomou: " + state.medicamentoAtual);
+
+  const corpo = {
+    dispositivo: state.dispositivoAtual,
+    posicao: state.posicaoAtual,
+    hora_programada: state.horaProgramadaAtual,
+    data: state.dataAlertaAtual,
+    hora_real: horaAgora(),
+  };
+
+  const { code, body } = await requisicao(
+    "POST",
+    `/dispositivo/${state.espId}/tomadas`,
+    JSON.stringify(corpo)
+  );
+
+  if (code === 201) {
+    log("✓ Medicamento marcado como TOMADO no servidor!", "ok");
+    log("✓ O aplicativo sera atualizado automaticamente.", "ok");
+    registrarLog("SUCESSO", `Dose confirmada pelo botao: ${state.medicamentoAtual} (${state.horaProgramadaAtual})`);
+
+    limparAlerta();
+    piscarLED(3, 200, 200);
+
+    log("\nMonitoramento continuara normalmente...", "info");
+    log("=================================\n", "info");
+    // igual ao firmware: já procura a próxima dose
+    setTimeout(() => verificarMedicamentos(), 500);
+  } else {
+    log(`✗ Erro ao registrar a dose (HTTP ${code}). Verifique a conexao e tente de novo.`, "err");
+    if (body) log(body, "err");
+  }
+}
+
+function limparAlerta() {
+  // Apaga LED do slot
+  if (state.dispositivoAtual === "maleta" && leds[state.posicaoAtual]) {
+    leds[state.posicaoAtual].classList.remove("on");
+    document.getElementById("slot_" + state.posicaoAtual)?.classList.remove("alerta");
+  }
+  alertaBanner.classList.remove("active");
+  alertaDetalhe.textContent = "";
+
+  state.alertaAtivo = false;
+  state.medicamentoAtual = "";
+  state.dispositivoAtual = "";
+  state.posicaoAtual = 0;
+  state.horaProgramadaAtual = "";
+  state.dataAlertaAtual = "";
+}
+
+function piscarLED(vezes, tempoLigado, tempoDesligado) {
+  // Pisca um LED "geral" (usamos o slot 1 para representar o LED de status)
+  // Na prática, o firmware pisca o GPIO 2. Aqui piscamos todos juntos
+  // para dar feedback visível.
+  let i = 0;
+  const intervalo = setInterval(() => {
+    const on = (i % 2 === 0);
+    leds.forEach(l => l && l.classList.toggle("on", on));
+    i++;
+    if (i >= vezes * 2) {
+      clearInterval(intervalo);
+      // Restaura estado real
+      if (state.alertaAtivo && state.dispositivoAtual === "maleta" && leds[state.posicaoAtual]) {
+        leds[state.posicaoAtual].classList.add("on");
+      }
+      leds.forEach((l, idx) => {
+        if (idx === 0) return;
+        if (idx !== state.posicaoAtual) l.classList.remove("on");
+      });
+    }
+  }, tempoLigado + (tempoDesligado || tempoLigado) / 2);
+}
+
+// ============================================================
+// BOTÃO (clique curto = confirmar; segurar 5s = portal)
+// ============================================================
+function botaoDown() {
+  if (!state.rodando) return;
+  botaoFisico.classList.add("pressed");
+  state.botaoPressionadoEm = Date.now();
+  state.pressaoLongaTratada = false;
+
+  state.botaoHoldTimer = setTimeout(async () => {
+    if (state.pressaoLongaTratada) return;
+    state.pressaoLongaTratada = true;
+    log("\nBotao pressionado por 5s: abrindo 'portal' de configuracao...", "warn");
+    // No ESP32 isso abriria o portal WiFiManager. Aqui, apenas mostramos
+    // um alerta e reenviamos o status (equivalente a conectarWiFi(true))
+    await enviarStatus();
+    log("Portal simulado: ajuste os campos de configuracao ao lado e clique em Iniciar.", "info");
+  }, TEMPO_PORTAL_BOTAO_MS);
+}
+
+function botaoUp() {
+  botaoFisico.classList.remove("pressed");
+  clearTimeout(state.botaoHoldTimer);
+
+  if (!state.rodando) return;
+  if (state.pressaoLongaTratada) return; // já tratou como pressão longa
+
+  // Clique curto
+  if (state.alertaAtivo) {
+    confirmarMedicamentoTomado();
+  } else {
+    log("Nenhum alerta ativo no momento.");
+  }
+}
+
+// ============================================================
+// LOOP
+// ============================================================
+function iniciar() {
+  const servidor = $("inputServidor").value.trim().replace(/\/+$/, "").replace(/\/api$/, "");
+  const id = $("inputId").value.trim();
+
+  if (!servidor) { alert("Preencha a URL do servidor."); return; }
+  if (!id) { alert("Preencha o ID do dispositivo."); return; }
+
+  state.servidorUrl = servidor;
+  state.espId = id;
+  state.rodando = true;
+  state.alertaAtivo = false;
+  state.vinculado = false;
+  localStorage.setItem("medcase_servidor", servidor);
+  localStorage.setItem("medcase_id", id);
+
+  log(`\n=================================`, "info");
+  log(`   MEDCASE - ESP32 Simulator`, "info");
+  log(`   Firmware v${FIRMWARE_VERSAO} (backend Flask)`, "info");
+  log(`=================================`, "info");
+  log(`ID do dispositivo: ${id}`, "info");
+  log(`Servidor: ${servidor}`, "info");
+  log(`\nComandos disponiveis:`, "info");
+  log(`  BOTAO - Confirmar medicamento (quando em alerta)`, "info");
+  log(`  BOTAO (segurar 5s) - Abrir 'portal' de configuracao`, "info");
+  log(`  Q - Confirmar pelo 'Serial'`, "info");
+  log(`  S - Verificar medicamentos agora`, "info");
+  log(`  W - Ver status Wi-Fi`, "info");
+  log(`  H - Ver hora atual`, "info");
+  log(`  I - Ver ID / servidor / vinculo`, "info");
+  log(`  R - Resetar configuracao`, "info");
+  log(`=================================\n`, "info");
+
+  habilitarBotoes(true);
+
+  // Primeira verificação + status (igual ao setup())
+  (async () => {
+    await enviarStatus();
+    state.lastStatus = Date.now();
+    if (state.vinculado) {
+      registrarLog("SISTEMA", `Dispositivo iniciado (firmware v${FIRMWARE_VERSAO}, IP 127.0.0.1)`);
+    }
+    await verificarMedicamentos();
+    state.lastCheck = Date.now();
+  })();
+
+  // Loop de verificação (30s)
+  state.checkTimer = setInterval(async () => {
+    if (!state.rodando) return;
+    state.lastCheck = Date.now();
+    await verificarMedicamentos();
+  }, CHECK_INTERVAL_MS);
+
+  // Loop de status (2min)
+  state.statusTimer = setInterval(async () => {
+    if (!state.rodando) return;
+    state.lastStatus = Date.now();
+    await enviarStatus();
+  }, STATUS_INTERVAL_MS);
+
+  // Relógio da UI (1s)
+  state.clockTimer = setInterval(atualizarUI, 1000);
+  atualizarUI();
+}
+
+function parar() {
+  state.rodando = false;
+  clearInterval(state.checkTimer);
+  clearInterval(state.statusTimer);
+  clearInterval(state.clockTimer);
+  habilitarBotoes(false);
+  limparAlerta();
+  log("⏹ Simulador parado.", "warn");
+}
+
+function habilitarBotoes(on) {
+  botaoFisico.disabled = !on;
+  ["cmdQ", "cmdS", "cmdW", "cmdH", "cmdI", "cmdR"].forEach(id => $(id).disabled = !on);
+  $("btnIniciar").disabled = on;
+  $("btnParar").disabled = !on;
+}
+
+function atualizarUI() {
+  const t = agoraBrasilia();
+  $("stWifi").textContent = state.rodando ? "ONLINE" : "—";
+  $("stWifi").className = "v " + (state.rodando ? "ok" : "");
+  $("stServidor").textContent = state.servidorUrl.replace(/^https?:\/\//, "");
+  $("stVinculado").textContent = state.vinculado ? "SIM" : "NAO";
+  $("stVinculado").className = "v " + (state.vinculado ? "ok" : "bad");
+  $("stHora").textContent = horaAgora(t) + ":" + String(t.getSeconds()).padStart(2, "0");
+
+  if (state.rodando) {
+    const dtCheck = Math.max(0, CHECK_INTERVAL_MS - (Date.now() - state.lastCheck));
+    const dtStatus = Math.max(0, STATUS_INTERVAL_MS - (Date.now() - state.lastStatus));
+    $("stProxCheck").textContent = Math.ceil(dtCheck / 1000) + "s";
+    $("stProxStatus").textContent = Math.ceil(dtStatus / 1000) + "s";
+  } else {
+    $("stProxCheck").textContent = "—";
+    $("stProxStatus").textContent = "—";
+  }
+}
+
+// ============================================================
+// COMANDOS (equivalente ao lerSerial)
+// ============================================================
+function cmdQ() {
+  if (state.alertaAtivo) confirmarMedicamentoTomado();
+  else log("Nenhum alerta ativo no momento.");
+}
+async function cmdS() {
+  log("Verificando medicamentos manualmente...", "info");
+  await verificarMedicamentos();
+}
+function cmdW() {
+  log("\n--- STATUS WIFI ---");
+  if (state.rodando) {
+    log("Status: CONECTADO");
+    log("SSID: (simulado)");
+    log("IP: 127.0.0.1");
+    log("RSSI: -50 dBm (simulado)");
+  } else {
+    log("Status: DESCONECTADO", "err");
+  }
+  mostrarHoraAtual();
+  log("-------------------\n");
+}
+function cmdH() { mostrarHoraAtual(); }
+function cmdI() {
+  log("\n--- MEDCASE ---");
+  log("ID do dispositivo: " + state.espId);
+  log("Servidor: " + state.servidorUrl);
+  log("Vinculado a uma conta: " + (state.vinculado ? "SIM" : "NAO (vincule no app: Integracao ESP32)"));
+  log("Firmware: v" + FIRMWARE_VERSAO);
+  log("---------------\n");
+}
+function cmdR() {
+  if (!confirm("Apagar configuração salva e recarregar a página?")) return;
+  localStorage.removeItem("medcase_servidor");
+  localStorage.removeItem("medcase_id");
+  log("Apagando configuracoes salvas e reiniciando...", "warn");
+  setTimeout(() => location.reload(), 500);
+}
+
+// ============================================================
+// EVENTOS
+// ============================================================
+$("btnIniciar").addEventListener("click", iniciar);
+$("btnParar").addEventListener("click", parar);
+$("btnLimparLog").addEventListener("click", () => logEl.innerHTML = "");
+
+$("cmdQ").addEventListener("click", cmdQ);
+$("cmdS").addEventListener("click", cmdS);
+$("cmdW").addEventListener("click", cmdW);
+$("cmdH").addEventListener("click", cmdH);
+$("cmdI").addEventListener("click", cmdI);
+$("cmdR").addEventListener("click", cmdR);
+
+// Botão físico: mouse
+botaoFisico.addEventListener("mousedown", (e) => { e.preventDefault(); botaoDown(); });
+botaoFisico.addEventListener("mouseup", (e) => { e.preventDefault(); botaoUp(); });
+botaoFisico.addEventListener("mouseleave", () => {
+  if (state.botaoPressionadoEm && !state.pressaoLongaTratada) {
+    // mouse saiu antes de soltar: trata como up
+    botaoUp();
+  }
+});
+
+// Botão físico: touch
+botaoFisico.addEventListener("touchstart", (e) => { e.preventDefault(); botaoDown(); }, { passive: false });
+botaoFisico.addEventListener("touchend", (e) => { e.preventDefault(); botaoUp(); }, { passive: false });
+botaoFisico.addEventListener("touchcancel", (e) => { e.preventDefault(); botaoUp(); }, { passive: false });
+
+// Teclado: atalhos (só se não estiver em input)
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT") return;
+  if (!state.rodando) return;
+  const k = e.key.toUpperCase();
+  if (k === "Q") cmdQ();
+  else if (k === "S") cmdS();
+  else if (k === "W") cmdW();
+  else if (k === "H") cmdH();
+  else if (k === "I") cmdI();
+  else if (k === "R") cmdR();
+});
+
+// Gerar ID
+$("btnGerarId").addEventListener("click", () => {
+  const hex = () => Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, "0");
+  $("inputId").value = "MC-" + hex() + hex() + hex();
+});
+
+// Carregar config salva
+window.addEventListener("DOMContentLoaded", () => {
+  const s = localStorage.getItem("medcase_servidor");
+  const i = localStorage.getItem("medcase_id");
+  if (s) $("inputServidor").value = s;
+  // Servido pelo backend (http://.../simulador): usa o próprio endereço da página
+  else $("inputServidor").value = location.protocol.startsWith("http") ? location.origin : SERVIDOR_PADRAO;
+  if (i) $("inputId").value = i;
+  log("Simulador carregado. Configure o servidor e o ID e clique em Iniciar.", "info");
+  log("(Os atalhos de teclado Q/S/W/H/I/R funcionam quando o simulador está rodando)", "info");
+});
+</script>
+
+</body>
+</html>

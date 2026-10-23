@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "MedCase",
+    "slug": "MedCaseApp",
+    "scheme": "medcase",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F2F2F2",
+    "ios": {
+      "bundleIdentifier": "com.medcase.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
+        "NSPhotoLibraryUsageDescription": "O MedCase usa sua galeria para escolher a foto de perfil.",
+        "NSCameraUsageDescription": "O MedCase usa a câmera para tirar sua foto de perfil.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "package": "com.medcase.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#181818",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.INTERNET"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#181818",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160
+        }
+      ],
+      "@react-native-community/datetimepicker",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O MedCase usa sua galeria para escolher a foto de perfil.",
+          "cameraPermission": "O MedCase usa a câmera para tirar sua foto de perfil."
+        }
+      ],
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      "expo-status-bar"
+    ],
+    "extra": {
+      "oneSignalAppId": "06ccb5ea-16e0-4c72-9612-5460f097be42",
+      "apiUrl": ""
+    }
+  }
+}

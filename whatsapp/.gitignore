@@ -1,0 +1,4 @@
+node_modules/
+# Sessão do WhatsApp (dá acesso à sua conta — nunca versionar)
+.wwebjs_auth/
+.wwebjs_cache/
