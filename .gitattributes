@@ -1,0 +1,11 @@
+# Arquivos consumidos pelo Linux precisam de LF. Com CRLF, um script shell
+# falha com "bad interpreter: /usr/bin/env bash^M" e uma unit do systemd
+# nao e lida corretamente.
+*.sh        text eol=lf
+*.service   text eol=lf
+*.py        text eol=lf
+*.txt       text eol=lf
+
+# Arquivos do Windows mantem CRLF.
+*.bat       text eol=crlf
+*.ps1       text eol=crlf
