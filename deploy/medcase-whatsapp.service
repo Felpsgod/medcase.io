@@ -1,0 +1,41 @@
+[Unit]
+Description=MedCase WhatsApp API (whatsapp-web.js)
+Documentation=https://github.com/Felpsgod/medcase.io
+After=network-online.target
+Wants=network-online.target
+# O backend consulta este serviço, mas não depende dele para subir.
+Before=medcase-api.service
+
+[Service]
+Type=simple
+User=__APP_USER__
+Group=__APP_USER__
+WorkingDirectory=/opt/medcase/whatsapp
+
+EnvironmentFile=-/opt/medcase/.env
+Environment="NODE_ENV=production"
+# A sessão do WhatsApp (LocalAuth) é gravada aqui. Fora da árvore do git para
+# que um 'git pull' não derrube o pareamento e exija novo QR code.
+Environment="PUPPETEER_CACHE_DIR=/opt/medcase/data/puppeteer"
+# O puppeteer (via cosmiconfig) procura configuracao em $HOME/.config. Como
+# ProtectHome=true torna /home inacessivel, o servico morria com EACCES em
+# /home/case/.config/puppeteer. Em vez de abrir mao da protecao, apontamos
+# HOME para dentro da propria pasta de dados.
+Environment="HOME=/opt/medcase/data/home"
+Environment="XDG_CONFIG_HOME=/opt/medcase/data/home/.config"
+Environment="XDG_CACHE_HOME=/opt/medcase/data/home/.cache"
+
+ExecStart=/usr/bin/node api.js
+
+Restart=on-failure
+RestartSec=10s
+
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/medcase/data /opt/medcase/whatsapp
+# O Chromium do puppeteer precisa de /dev/shm maior que o padrão do PrivateTmp.
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target

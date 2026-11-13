@@ -1,0 +1,44 @@
+[Unit]
+Description=MedCase API (Flask + gunicorn)
+Documentation=https://github.com/Felpsgod/medcase.io
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__APP_USER__
+Group=__APP_USER__
+WorkingDirectory=/opt/medcase/backend
+
+# Padrões. Vêm ANTES do EnvironmentFile de propósito: o systemd aplica as
+# diretivas na ordem em que aparecem, então o .env sobrescreve qualquer coisa
+# daqui — é ele a fonte única de configuração.
+Environment="PYTHONUNBUFFERED=1"
+Environment="PORT=5000"
+Environment="DATABASE_URL=sqlite:////opt/medcase/data/medcase.db"
+Environment="WHATSAPP_API_URL=http://127.0.0.1:3005"
+
+# Configuração: TODA a parametrização (porta inclusive) fica em /opt/medcase/.env.
+# O '-' faz o systemd não falhar se o arquivo não existir.
+EnvironmentFile=-/opt/medcase/.env
+
+# init.py expõe `app` no nível do módulo, mas as tabelas são criadas no bloco
+# __main__, que o gunicorn não executa — daí o ExecStartPre.
+ExecStartPre=/opt/medcase/.venv/bin/python -c "import init; init.criar_tabelas(init.app)"
+ExecStart=/opt/medcase/.venv/bin/gunicorn --config /opt/medcase/deploy/gunicorn.conf.py init:app
+
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+
+# Endurecimento: o serviço só escreve na pasta de dados.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+ReadWritePaths=/opt/medcase/data
+
+[Install]
+WantedBy=multi-user.target
